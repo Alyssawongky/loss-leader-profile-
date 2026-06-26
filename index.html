@@ -43,6 +43,104 @@
     min-height: 100vh;
   }
 
+  /* ── PASSWORD GATE ── */
+  #password-gate {
+    position: fixed;
+    inset: 0;
+    background: var(--green-deep);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 2rem;
+  }
+  #password-gate.hidden { display: none; }
+  .gate-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(168,213,181,0.2);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+  }
+  .gate-brand {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--green-sage);
+    margin-bottom: 1.5rem;
+    opacity: 0.8;
+  }
+  .gate-title {
+    font-family: 'Lora', serif;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #F7F4EF;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+  }
+  .gate-sub {
+    font-size: 13px;
+    color: var(--green-sage);
+    opacity: 0.8;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+  .gate-input-wrap {
+    position: relative;
+    margin-bottom: 1rem;
+  }
+  .gate-input {
+    width: 100%;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    padding: 0.75rem 1rem;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(168,213,181,0.25);
+    border-radius: 10px;
+    color: #F7F4EF;
+    text-align: center;
+    letter-spacing: 0.08em;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .gate-input::placeholder { color: rgba(168,213,181,0.4); letter-spacing: 0; }
+  .gate-input:focus { border-color: var(--green-sage); }
+  .gate-input.error { border-color: #E07070; animation: shake 0.3s ease; }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+  .gate-error {
+    font-size: 12px;
+    color: #E07070;
+    margin-bottom: 1rem;
+    min-height: 18px;
+  }
+  .gate-btn {
+    width: 100%;
+    background: var(--green-sage);
+    color: var(--green-deep);
+    border: none;
+    border-radius: 10px;
+    padding: 0.75rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    letter-spacing: 0.01em;
+  }
+  .gate-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  .gate-footer {
+    margin-top: 1.75rem;
+    font-size: 11px;
+    color: rgba(168,213,181,0.4);
+  }
+
   /* ── HEADER ── */
   .site-header {
     background: var(--green-deep);
@@ -587,6 +685,28 @@
 </head>
 <body>
 
+<!-- PASSWORD GATE -->
+<div id="password-gate">
+  <div class="gate-card">
+    <div class="gate-brand">Positively Powered</div>
+    <div class="gate-title">Loss Leader Profile</div>
+    <div class="gate-sub">Enter your access code to begin.</div>
+    <div class="gate-input-wrap">
+      <input
+        type="password"
+        id="gate-input"
+        class="gate-input"
+        placeholder="Access code"
+        autocomplete="off"
+        onkeydown="if(event.key==='Enter')checkPassword()"
+      >
+    </div>
+    <div class="gate-error" id="gate-error"></div>
+    <button class="gate-btn" onclick="checkPassword()">Continue &rarr;</button>
+    <div class="gate-footer">Don't have an access code? Contact <a href="https://www.positivelypowered.net" style="color:rgba(168,213,181,0.6);text-decoration:none">positivelypowered.net</a></div>
+  </div>
+</div>
+
 <header class="site-header">
   <span class="brand">Positively Powered</span>
   <a href="https://www.positivelypowered.net" class="back-link">positivelypowered.net &rarr;</a>
@@ -687,6 +807,28 @@
 </footer>
 
 <script>
+// ── PASSWORD GATE ──
+// To change the password, update the value below
+const ACCESS_CODE = "clarity2025";
+
+function checkPassword() {
+  const input = document.getElementById('gate-input');
+  const error = document.getElementById('gate-error');
+  const val = input.value.trim().toLowerCase();
+
+  if (val === ACCESS_CODE.toLowerCase()) {
+    document.getElementById('password-gate').classList.add('hidden');
+    input.value = '';
+    error.textContent = '';
+  } else {
+    input.classList.add('error');
+    error.textContent = 'Incorrect access code. Please try again.';
+    input.value = '';
+    setTimeout(() => input.classList.remove('error'), 400);
+  }
+}
+
+// ── ASSESSMENT ──
 const QUESTIONS = [
   {g:"How you make decisions",q:"You are halfway through a task when new information suggests your original approach might not be right. You:",o:[["Adjust on the go — course-correct in motion rather than stop and restart","D"],["Pause and reassess properly before continuing — a wrong approach compounds quickly","I"],["Talk it through with someone you trust before deciding whether to change direction","C"],["Check the original brief and agreed approach before making any changes","S"]]},
   {g:"How you make decisions",q:"You have two options in front of you. The data slightly favours one, but your instinct says the other. You:",o:[["Go with your instinct — you have earned the right to trust it","D"],["Go with the data — instinct without evidence is just a feeling","I"],["Talk to a couple of people who know the context before deciding","C"],["Go with the data — changing approach mid-process creates inconsistency","S"]]},
