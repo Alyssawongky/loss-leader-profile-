@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loss Leader Profile — Positively Powered</title>
+<meta name="description" content="A practical, connection-focused assessment for retail loss prevention leaders. Understand how you work, communicate, and lead under pressure.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap');
+
+  :root {
+    --green-deep:   #2B5C4B;
+    --green-mid:    #3D7A64;
+    --green-sage:   #A8D5B5;
+    --green-tint:   #E8F3EC;
+    --green-light:  #E1F5EE;
+    --off-white:    #F7F4EF;
+    --warm-grey:    #EAE7E2;
+    --text-primary: #1A2B25;
+    --text-secondary: #5A6B63;
+    --text-light:   #8A9E95;
+    --border:       #D4E0D8;
+    --amber:        #FAEEDA;
+    --amber-border: #BA7517;
+    --amber-text:   #633806;
+    --blue-tint:    #E6F1FB;
+    --blue-border:  #185FA5;
+    --blue-text:    #0C447C;
+    --purple-tint:  #EEEDFE;
+    --purple-border:#534AB7;
+    --purple-text:  #3C3489;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--off-white);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .site-header {
+    background: var(--green-deep);
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .site-header .brand {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--green-sage);
+  }
+  .site-header .back-link {
+    font-size: 12px;
+    color: var(--green-sage);
+    text-decoration: none;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+  .site-header .back-link:hover { opacity: 1; }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--green-deep);
+    padding: 3.5rem 2rem 4rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 280px; height: 280px;
+    border: 1px solid rgba(168,213,181,0.15);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: -40px;
+    width: 200px; height: 200px;
+    border: 1px solid rgba(168,213,181,0.1);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--green-sage);
+    margin-bottom: 1rem;
+  }
+  .hero h1 {
+    font-family: 'Lora', serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 500;
+    color: #F7F4EF;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .hero-sub {
+    font-size: 15px;
+    color: var(--green-sage);
+    max-width: 500px;
+    margin: 0 auto 1.75rem;
+    line-height: 1.7;
+    opacity: 0.9;
+  }
+  .hero-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+  .hero-tag {
+    background: rgba(168,213,181,0.15);
+    border: 1px solid rgba(168,213,181,0.3);
+    color: var(--green-sage);
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.03em;
+  }
+  .hero-meta {
+    font-size: 12px;
+    color: rgba(168,213,181,0.6);
+    letter-spacing: 0.04em;
+  }
+
+  /* ── MAIN CONTAINER ── */
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  /* ── SCREENS ── */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ── INTRO CARD ── */
+  .intro-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+  }
+  .intro-card h2 {
+    font-family: 'Lora', serif;
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+  }
+  .intro-card p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+  .intro-card p:last-of-type { margin-bottom: 0; }
+
+  .name-field {
+    margin: 1.5rem 0;
+  }
+  .name-field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .name-field input {
+    width: 100%;
+    max-width: 300px;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    padding: 0.65rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--off-white);
+    color: var(--text-primary);
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .name-field input:focus { border-color: var(--green-mid); }
+
+  /* ── PROGRESS ── */
+  .progress-wrap {
+    margin-bottom: 1.75rem;
+  }
+  .progress-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+  .progress-dim {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--green-mid);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .progress-count {
+    font-size: 12px;
+    color: var(--text-light);
+  }
+  .progress-bar {
+    height: 3px;
+    background: var(--warm-grey);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--green-mid);
+    border-radius: 2px;
+    transition: width 0.35s ease;
+  }
+
+  /* ── QUESTION ── */
+  .question-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 1rem;
+  }
+  .question-card h2 {
+    font-family: 'Lora', serif;
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1.5;
+    margin-bottom: 0;
+  }
+
+  .options-list {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 1.25rem;
+  }
+  .option-btn {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 13.5px;
+    color: var(--text-primary);
+    text-align: left;
+    cursor: pointer;
+    line-height: 1.55;
+    transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  }
+  .option-btn:hover {
+    border-color: var(--green-mid);
+    background: var(--green-tint);
+    transform: translateY(-1px);
+  }
+  .option-btn.selected {
+    border-color: var(--green-deep);
+    background: var(--green-tint);
+    color: #1a3d30;
+  }
+
+  .nav-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* ── BUTTONS ── */
+  .btn-primary {
+    background: var(--green-deep);
+    color: var(--off-white);
+    border: none;
+    border-radius: 8px;
+    padding: 0.65rem 1.75rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    letter-spacing: 0.01em;
+  }
+  .btn-primary:hover { background: var(--green-mid); transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: 0.35; cursor: default; transform: none; }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.65rem 1.1rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .btn-secondary:hover { border-color: var(--text-secondary); }
+
+  /* ── RESULT HERO ── */
+  .result-hero {
+    background: var(--green-deep);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 1.25rem;
+    color: var(--off-white);
+    position: relative;
+    overflow: hidden;
+  }
+  .result-hero::after {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    border: 1px solid rgba(168,213,181,0.15);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .result-code {
+    font-family: 'Lora', serif;
+    font-size: 2.5rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    color: var(--green-sage);
+    margin-bottom: 0.4rem;
+  }
+  .result-name {
+    font-family: 'Lora', serif;
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--off-white);
+    margin-bottom: 0.5rem;
+  }
+  .result-tagline {
+    font-size: 13.5px;
+    color: var(--green-sage);
+    line-height: 1.65;
+    opacity: 0.9;
+    max-width: 520px;
+  }
+
+  /* ── DIMENSION BARS ── */
+  .dim-bars {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .dim-bars-title {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 1rem;
+  }
+  .dim-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .dim-row:last-child { margin-bottom: 0; }
+  .dim-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    width: 80px;
+    flex-shrink: 0;
+  }
+  .dim-bar-bg {
+    flex: 1;
+    height: 5px;
+    background: var(--warm-grey);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .dim-bar-fill {
+    height: 100%;
+    background: var(--green-mid);
+    border-radius: 3px;
+    transition: width 0.8s ease;
+  }
+  .dim-pct {
+    font-size: 11px;
+    color: var(--text-light);
+    width: 30px;
+    text-align: right;
+  }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex;
+    background: var(--warm-grey);
+    border-radius: 10px;
+    padding: 3px;
+    margin-bottom: 1.25rem;
+    gap: 3px;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 0.5rem 0.5rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 12.5px;
+    font-weight: 400;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    background: transparent;
+    color: var(--text-secondary);
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .tab-btn.active {
+    background: #fff;
+    color: var(--green-deep);
+    font-weight: 500;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── SECTION LABELS ── */
+  .section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--green-mid);
+    margin: 1.5rem 0 0.6rem;
+  }
+  .section-label:first-child { margin-top: 0; }
+
+  /* ── CARDS ── */
+  .card {
+    border-radius: 10px;
+    padding: 0.9rem 1rem;
+    margin-bottom: 8px;
+    font-size: 13.5px;
+    line-height: 1.65;
+  }
+  .card-green {
+    background: var(--green-tint);
+    border-left: 3px solid var(--green-deep);
+    color: #1a3d30;
+  }
+  .card-amber {
+    background: var(--amber);
+    border-left: 3px solid var(--amber-border);
+    color: var(--amber-text);
+  }
+  .card-blue {
+    background: var(--blue-tint);
+    border-left: 3px solid var(--blue-border);
+    color: var(--blue-text);
+  }
+  .card-purple {
+    background: var(--purple-tint);
+    border-left: 3px solid var(--purple-border);
+    color: var(--purple-text);
+  }
+  .card-learn {
+    background: var(--green-light);
+    border-left: 3px solid #1D9E75;
+    color: #085041;
+  }
+  .card-neutral {
+    background: #fff;
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+  }
+  .card-neutral .card-label {
+    font-size: 11px;
+    color: var(--text-light);
+    margin-bottom: 4px;
+  }
+
+  /* ── LEARN BADGE ── */
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-left: 6px;
+    letter-spacing: 0.03em;
+    vertical-align: middle;
+    background: var(--green-light);
+    color: #085041;
+  }
+
+  /* ── SIGNATURE ── */
+  .signature {
+    margin-top: 2rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text-light);
+    font-style: italic;
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  /* ── CTA ── */
+  .cta-block {
+    background: var(--green-deep);
+    border-radius: 14px;
+    padding: 1.75rem;
+    margin-top: 1.5rem;
+    text-align: center;
+    color: var(--off-white);
+  }
+  .cta-block p {
+    font-size: 13.5px;
+    color: var(--green-sage);
+    margin-bottom: 1.1rem;
+    line-height: 1.65;
+    opacity: 0.9;
+  }
+  .cta-block .btn-cta {
+    background: var(--off-white);
+    color: var(--green-deep);
+    border: none;
+    border-radius: 8px;
+    padding: 0.65rem 1.75rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: opacity 0.2s;
+  }
+  .cta-block .btn-cta:hover { opacity: 0.9; }
+
+  /* ── FOOTER ── */
+  .site-footer {
+    background: var(--green-deep);
+    padding: 2rem;
+    text-align: center;
+    margin-top: 3rem;
+  }
+  .site-footer p {
+    font-size: 12px;
+    color: rgba(168,213,181,0.6);
+    line-height: 1.6;
+  }
+  .site-footer a {
+    color: var(--green-sage);
+    text-decoration: none;
+  }
+  .site-footer a:hover { text-decoration: underline; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 480px) {
+    .hero { padding: 2.5rem 1.25rem 3rem; }
+    .container { padding: 1.5rem 1rem 3rem; }
+    .intro-card, .question-card { padding: 1.5rem; }
+    .tabs { gap: 2px; }
+    .tab-btn { font-size: 11.5px; padding: 0.5rem 0.3rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <span class="brand">Positively Powered</span>
+  <a href="https://www.positivelypowered.net" class="back-link">positivelypowered.net &rarr;</a>
+</header>
+
+<section class="hero">
+  <div class="hero-eyebrow">Loss Prevention Leadership</div>
+  <h1>Loss Leader Profile</h1>
+  <p class="hero-sub">A practical assessment that helps you understand how you work, communicate, and lead under pressure — and gives your manager the tools to support you better.</p>
+  <div class="hero-tags">
+    <span class="hero-tag">Strengths</span>
+    <span class="hero-tag">Blind spots</span>
+    <span class="hero-tag">Communication style</span>
+    <span class="hero-tag">How you learn</span>
+    <span class="hero-tag">Future potential</span>
+    <span class="hero-tag">Manager guide</span>
+  </div>
+  <p class="hero-meta">36 questions &nbsp;·&nbsp; ~8 minutes &nbsp;·&nbsp; Personalised report</p>
+</section>
+
+<main class="container">
+
+  <!-- INTRO SCREEN -->
+  <div id="screen-intro" class="screen active">
+    <div class="intro-card">
+      <h2>This is not a personality test.</h2>
+      <p>The Loss Leader Profile is a connection-focused framework. It identifies how you make decisions, communicate, respond under pressure, and learn — then translates that into practical guidance you can use immediately.</p>
+      <p>Your result is a personalised report with two lenses: one for you, and one for your manager. No jargon. No labels. Just a clear picture of how you work best — and how the people around you can bring out more of it.</p>
+      <div class="name-field">
+        <label for="firstname">Your first name</label>
+        <input type="text" id="firstname" placeholder="e.g. Alex" maxlength="30" autocomplete="given-name">
+      </div>
+      <button class="btn-primary" onclick="startAssessment()">Begin your profile &rarr;</button>
+    </div>
+  </div>
+
+  <!-- QUESTION SCREEN -->
+  <div id="screen-question" class="screen">
+    <div class="progress-wrap">
+      <div class="progress-top">
+        <span class="progress-dim" id="prog-dim"></span>
+        <span class="progress-count" id="prog-count"></span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="prog-fill"></div>
+      </div>
+    </div>
+    <div class="question-card">
+      <h2 id="q-text"></h2>
+    </div>
+    <div class="options-list" id="options-list"></div>
+    <div class="nav-row">
+      <button class="btn-secondary" id="btn-back" onclick="goBack()">Back</button>
+      <button class="btn-primary" id="btn-next" onclick="goNext()" disabled>Next</button>
+    </div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div id="screen-result" class="screen">
+    <div class="result-hero">
+      <div class="result-code" id="res-code"></div>
+      <div class="result-name" id="res-name"></div>
+      <div class="result-tagline" id="res-tagline"></div>
+    </div>
+    <div class="dim-bars">
+      <div class="dim-bars-title">Your profile breakdown</div>
+      <div id="dim-bars-content"></div>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('me', this)">My report</button>
+      <button class="tab-btn" onclick="switchTab('learn', this)">How I learn</button>
+      <button class="tab-btn" onclick="switchTab('mgr', this)">Manager guide</button>
+    </div>
+    <div id="tab-me" class="tab-panel active"></div>
+    <div id="tab-learn" class="tab-panel"></div>
+    <div id="tab-mgr" class="tab-panel"></div>
+    <div class="signature">
+      With clarity and conviction, Sophie.<br>
+      Positively Powered &nbsp;·&nbsp; <a href="https://www.positivelypowered.net" style="color:inherit">positivelypowered.net</a>
+    </div>
+    <div class="cta-block">
+      <p>Want to map your whole team? Each person completes the profile and you compare results side by side to identify where collaboration flows and where friction is likely to surface.</p>
+      <a href="https://www.positivelypowered.net" class="btn-cta">Get in touch &rarr;</a>
+    </div>
+    <div style="margin-top:1rem;text-align:right">
+      <button class="btn-secondary" onclick="resetAll()">Retake assessment</button>
+    </div>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <p>
+    &copy; 2025 Positively Powered &nbsp;·&nbsp;
+    <a href="https://www.positivelypowered.net">positivelypowered.net</a><br>
+    Retail loss prevention coaching, training &amp; tailored solutions.
+  </p>
+</footer>
+
+<script>
+const QUESTIONS = [
+  {g:"How you make decisions",q:"You are halfway through a task when new information suggests your original approach might not be right. You:",o:[["Adjust on the go — course-correct in motion rather than stop and restart","D"],["Pause and reassess properly before continuing — a wrong approach compounds quickly","I"],["Talk it through with someone you trust before deciding whether to change direction","C"],["Check the original brief and agreed approach before making any changes","S"]]},
+  {g:"How you make decisions",q:"You have two options in front of you. The data slightly favours one, but your instinct says the other. You:",o:[["Go with your instinct — you have earned the right to trust it","D"],["Go with the data — instinct without evidence is just a feeling","I"],["Talk to a couple of people who know the context before deciding","C"],["Go with the data — changing approach mid-process creates inconsistency","S"]]},
+  {g:"How you make decisions",q:"Something unexpected needs a decision today and you do not have all the information you would like. You:",o:[["Make the best call available — delaying is also a decision, and not always the right one","D"],["Identify the single most important piece of missing information and get it before deciding","I"],["Bring in someone with relevant experience — their judgment supplements yours","C"],["Apply the closest established guideline or precedent and document your reasoning","S"]]},
+  {g:"How you communicate",q:"You need to explain a complicated situation to a group. Your natural instinct is to:",o:[["Get to the point fast — state the problem and what needs to happen","D"],["Walk through the background so people understand why before discussing what to do","I"],["Read the room first — how you explain it depends on who is in it","C"],["Use a structure — situation, context, options, recommendation — so nothing is missed","S"]]},
+  {g:"How you communicate",q:"A colleague misunderstood something you communicated last week and acted on the wrong assumption. You:",o:[["Address it quickly and directly — clarity now saves time later","D"],["Review what you said and consider whether your communication was actually clear before raising it","I"],["Have a relaxed conversation — understand their read before correcting it","C"],["Send a written follow-up that clarifies the original intent and agreed next steps","S"]]},
+  {g:"How you communicate",q:"When someone sends you a long, detailed update, your honest reaction is:",o:[["Skim to the bottom to find out what they need — you can go back if necessary","D"],["Read it properly — skimming risks missing something that matters","I"],["Notice the tone as much as the content — how someone writes tells you where they are at","C"],["Appreciate the detail — it makes it easier to respond accurately","S"]]},
+  {g:"What energises and drains you",q:"At the end of a genuinely good week at work, what made it good?",o:[["You moved things forward — decisions made, problems solved, progress visible","D"],["You worked through something complex and came out with a clear, well-reasoned answer","I"],["The team was in a good place and the relationships felt strong","C"],["Things ran smoothly and the work was executed well against the plan","S"]]},
+  {g:"What energises and drains you",q:"Which of these is most likely to leave you feeling flat or frustrated at the end of a day?",o:[["A day full of meetings where nothing was decided or moved","D"],["Being asked to produce work quickly without adequate time to do it properly","I"],["Working in an environment where people are disengaged or the atmosphere is tense","C"],["Operating without clear direction or where the goalposts keep shifting","S"]]},
+  {g:"What energises and drains you",q:"The kind of work that makes you feel most like yourself is:",o:[["Work where you can see the direct impact of your effort on the outcome","D"],["Work that stretches your thinking and rewards depth of knowledge","I"],["Work that involves bringing people together toward a shared goal","C"],["Work where precision and consistency are rewarded and standards matter","S"]]},
+  {g:"How you respond under pressure",q:"Everything lands at once — three urgent things need your attention simultaneously. Your first move is to:",o:[["Pick the most important one and start — momentum matters more than a perfect plan","D"],["Spend two minutes ordering them by impact and complexity before touching any of them","I"],["Quickly check in with the relevant people — some may not need to be yours to solve","C"],["Work through them in order of urgency using your existing triage process","S"]]},
+  {g:"How you respond under pressure",q:"You are in a difficult conversation that is not going the way you expected. You:",o:[["Stay direct — push through the discomfort rather than dance around it","D"],["Slow down and ask more questions — understand what is actually happening before responding","I"],["Shift your approach based on how the other person is feeling — read the room and adjust","C"],["Bring it back to what was agreed — a shared reference point reduces the temperature","S"]]},
+  {g:"How you respond under pressure",q:"The thing that most reliably gets under your skin at work is:",o:[["Being unable to act on something you can clearly see needs fixing","D"],["Being expected to make an important call without adequate information or preparation time","I"],["A working environment where people feel unsupported or trust has eroded","C"],["Inconsistency — when rules or expectations are applied differently depending on the day","S"]]},
+  {g:"Where you add the most value",q:"A colleague is describing the person they most want on their team for a high-stakes project. Without saying it directly, they are describing you. What are they saying?",o:[["Someone who takes ownership, makes decisions, and keeps things moving when it gets hard","D"],["Someone who brings rigour — they will have thought of the thing everyone else missed","I"],["Someone who brings the team together and makes sure people are aligned and supported","C"],["Someone who makes sure the work is done properly — no shortcuts, no gaps, no surprises","S"]]},
+  {g:"Where you add the most value",q:"You are most confident when you are:",o:[["Leading something — you know how to set direction and get people moving","D"],["Solving something — you know how to break a problem apart and find the answer","I"],["Supporting someone — you know how to help people perform at their best","C"],["Building something — you know how to design a system that will hold up over time","S"]]},
+  {g:"Where you add the most value",q:"When you walk into a new environment — a team, a site, a project — what do you notice first?",o:[["Where the energy is and where the biggest opportunity or problem sits","D"],["How things are set up and whether the logic behind them holds together","I"],["How people are with each other — the dynamic, the morale, the unspoken stuff","C"],["Whether things are being done consistently and whether the standards are being held","S"]]},
+  {g:"How you like to be managed",q:"Your manager regularly checks in on the detail of your work without being asked. Your honest reaction is:",o:[["Mildly frustrating — you would rather be trusted and flagged when needed","D"],["Fine, as long as they engage with the substance — surface-level check-ins feel like noise","I"],["Welcome, as long as it feels like genuine interest rather than surveillance","C"],["Reassuring — you value the alignment and it keeps everyone on the same page","S"]]},
+  {g:"How you like to be managed",q:"The kind of recognition that means the most to you is:",o:[["Being given more responsibility — trust is the best form of recognition","D"],["Having your thinking or analysis specifically acknowledged — not just the outcome, the how","I"],["Being told the impact you have had on people — on the team, on someone's development","C"],["Consistent, reliable feedback that you are meeting the standard — knowing where you stand","S"]]},
+  {g:"How you like to be managed",q:"An environment where you consistently do your worst work looks like:",o:[["High process, low autonomy — everything needs sign-off and progress is slow","D"],["High pace, low depth — react quickly without time to think properly","I"],["Low trust, low warmth — transactional relationships and no sense of shared purpose","C"],["High ambiguity, low structure — expectations shift with no consistent framework","S"]]},
+  {g:"Your growth edge",q:"The version of you that shows up when you are at your worst — what does that person do?",o:[["Moves too fast, decides without enough input, and leaves people behind","D"],["Overthinks, delays, and asks for more information than the situation requires","I"],["Avoids the hard conversation to keep the peace, and regrets it later","C"],["Digs in on the process when flexibility would have been the better call","S"]]},
+  {g:"Your growth edge",q:"If you are honest with yourself, the feedback you are most likely to receive from people who work closely with you is:",o:[["You are great at driving outcomes but sometimes the pace or directness is hard to keep up with","D"],["You are thorough and considered but sometimes the team needs you to move before you feel ready","I"],["You are genuinely supportive but occasionally you need to hold the line more firmly","C"],["You are reliable and consistent but occasionally the situation needed judgment more than procedure","S"]]},
+  {g:"Your growth edge",q:"When you encounter a situation that is genuinely outside your experience, your honest first instinct is:",o:[["Lean in — novelty is interesting and you back yourself to figure it out","D"],["Research before acting — not comfortable operating without a solid understanding of the territory","I"],["Find someone who has navigated it before — peer experience is the fastest path to clarity","C"],["Map the closest comparable situation and apply what worked — you trust proven approaches","S"]]},
+  {g:"How you approach risk",q:"A situation is developing and the picture is not yet clear. You:",o:[["Act on your best read — waiting for perfect clarity is a luxury most situations do not offer","D"],["Identify the fastest way to get the critical missing information before committing","I"],["Bring in the people closest to it — collective judgment reduces blind spots","C"],["Apply your established framework and hold position until the picture sharpens","S"]]},
+  {g:"How you approach risk",q:"You have a strong gut feeling that something is wrong, but you cannot yet prove it. You:",o:[["Start moving — your instinct is usually right and early action gives you options","D"],["Start documenting and investigating — build the case before taking any visible action","I"],["Talk it through with someone you trust — test whether your read is sound before acting","C"],["Check your process first — if something has been missed, the framework will surface it","S"]]},
+  {g:"How you approach risk",q:"Something you led did not go as planned. After the dust settles, your instinct is to:",o:[["Identify what you would do differently and move on — extended reflection rarely changes anything","D"],["Do a proper debrief — understand the root cause before drawing conclusions about what to change","I"],["Check in with the people involved — how they experienced it matters as much as what happened","C"],["Go back through the process step by step and identify exactly where it diverged from the plan","S"]]},
+  {g:"How you work with others",q:"You are working on a project with people you do not know well. What do you do first?",o:[["Establish what the goal is and who is doing what — alignment on outputs comes first","D"],["Understand the brief thoroughly — know the full scope before committing to an approach","I"],["Spend a little time getting to know the people — rapport makes the actual work go better","C"],["Get the process agreed — roles, timelines, and decision rights documented upfront saves friction","S"]]},
+  {g:"How you work with others",q:"Over time, people come to trust you primarily because:",o:[["You do what you say you will do, and you deliver — your track record speaks","D"],["You know your subject deeply and your judgment is sound — people trust your expertise","I"],["You genuinely care about the people you work with and it shows in how you show up","C"],["You are consistent and predictable in the best way — people always know what to expect","S"]]},
+  {g:"How you work with others",q:"You notice the dynamic in a group is off — people are not quite working well together. You:",o:[["Name it and address it — leaving it to fester costs more than the discomfort of raising it","D"],["Observe for a little longer before acting — understand the cause, not just the symptom","I"],["Create an informal moment for the group — a reset sometimes fixes more than a direct conversation","C"],["Bring the group back to the shared goal and agreed ways of working — structure is often the antidote","S"]]},
+  {g:"What you need to do your best work",q:"The single thing that most consistently enables your best work is:",o:[["A clear goal and enough authority to pursue it your way","D"],["Good information, adequate thinking time, and the expectation of quality over speed","I"],["People around you who are engaged, collaborative, and genuinely invested in the outcome","C"],["A clear framework, defined expectations, and a consistent environment to work within","S"]]},
+  {g:"What you need to do your best work",q:"From the people who lead you, what you most need is:",o:[["Trust — space to lead and backing when it matters","D"],["Transparency — the full picture, not a filtered version","I"],["Genuine connection — you perform better when the relationship with your leader feels real","C"],["Consistency — clear expectations applied fairly that do not shift without explanation","S"]]},
+  {g:"What you need to do your best work",q:"The environment most likely to produce your worst work is one where:",o:[["Every decision needs approval and progress requires navigating layers of process","D"],["Speed is valued above accuracy and there is no space to think before being expected to act","I"],["The culture is transactional, relationships are thin, and people are working in silos","C"],["Direction is unclear, priorities shift constantly, and there is no reliable structure to anchor to","S"]]},
+  {g:"Future potential",q:"When you imagine doing your most meaningful work, what does that look like?",o:[["Leading something significant — a transformation or turnaround that most people would find daunting","D"],["Solving something that has not been solved before — a problem complex enough to require genuine intellectual effort","I"],["Building a team or culture that becomes a genuine advantage — something that outlasts your direct involvement","C"],["Creating a system or framework that becomes the standard — something people rely on long after you built it","S"]]},
+  {g:"Future potential",q:"When you look back at the times you have grown the most, what was the common factor?",o:[["You were thrown into something hard and had to figure it out — pressure accelerates your learning","D"],["You had space to go deep — time and resource to really understand something properly","I"],["You were surrounded by people who challenged and supported you in equal measure","C"],["You had a clear structure to work within and a defined path to follow and master","S"]]},
+  {g:"Future potential",q:"The opportunity that would most accelerate your growth right now is:",o:[["A step up in scope — a bigger, more complex challenge with more at stake","D"],["Dedicated space to develop specialist depth — time and resource invested in your expertise","I"],["A senior sponsor genuinely invested in your development and opening the right doors","C"],["A structured pathway — clear milestones, defined expectations, and support to execute against them","S"]]},
+  {g:"How you learn best",q:"You have been asked to build capability in a skill that is genuinely new to you. The way you would learn it fastest is:",o:[["Get into a real situation that requires it and figure it out under live conditions — you need stakes to focus","D"],["Read, research, and study it properly before you attempt it — you want a strong conceptual foundation first","I"],["Work alongside someone who does it well and learn by observing and asking questions in context","C"],["Work through a structured programme with clear steps, checkpoints, and defined milestones","S"]]},
+  {g:"How you learn best",q:"Someone is giving you feedback on something you could do better. To get the most out of that conversation, you need:",o:[["The feedback delivered directly and immediately — you want to know now so you can act on it","D"],["Time to process it before responding — your best insights come after reflection, not in the moment","I"],["The feedback delivered in the context of your relationship — you need to trust the source before you can hear it","C"],["The feedback anchored to a specific standard or example — abstract feedback is hard to act on","S"]]},
+  {g:"How you learn best",q:"Think about a piece of training or development that genuinely changed how you work. What made it stick?",o:[["It put you in a situation where you had to apply it immediately — the doing is what made it real","D"],["It gave you a deep enough understanding of the why that you could adapt it to any situation","I"],["It happened in a group or with a partner — the shared experience made the learning land","C"],["It was well-structured with clear frameworks, tools, and a logical sequence you could follow and revisit","S"]]}
+];
+
+const PROFILES = {
+  D: {
+    name: "The Driver", tag: "Results-focused, direct, and decisive. You move fast, hold people accountable, and create momentum that others follow.",
+    str: ["You take ownership without being asked — in complex, fast-moving environments this is the difference between progress and stagnation.", "You make decisions with incomplete information and accept that course-correction is part of the process. This is rare and genuinely valuable.", "You hold people to account clearly and without drama. Teams know where they stand with you.", "You create energy and pace. When things need to move, you are the person others look to."],
+    bs: ["Your pace can leave people behind — not because they are slower, but because they process differently. The result you want is undermined when the team is not with you.", "Directness without warmth can read as dismissiveness. You may intend clarity; others may experience criticism.", "You can move to solutions before the problem is fully understood. Speed is an asset. Premature closure is a risk.", "Your frustration with slow progress is visible. When it surfaces at the wrong moment, it creates anxiety rather than urgency."],
+    cm: ["Lead with the outcome, not the background. Your audience will engage more when they know the destination first.", "For high-stakes conversations, write a short brief beforehand — your spoken communication is decisive but can outpace the listener.", "You are most effective in direct, one-to-one communication. Group settings benefit from a moment of patience.", "When you need buy-in, not just compliance, slow down enough to explain the why. People commit to what they understand."],
+    pt: ["You are built for larger, more complex challenges. The trajectory that fits your profile is one of increasing scope — regional, national, or transformation leadership.", "Your growth will come from building capability in others rather than carrying outcomes yourself. The leaders who last at scale create more leaders.", "One development focus: invest in the relationship with your team as deliberately as you invest in results. Long-term, they are the same priority."],
+    ln: ["You learn fastest under live conditions with real stakes. Abstract training rarely sticks — you need to be in the situation before the lesson lands properly.", "Build in a two-minute debrief habit after significant interactions. Your instinct to move on quickly is an asset in recovery but can cost you the learning.", "The development format that works best for you is stretch assignments, not workshops. Put yourself in rooms where the problem is real and the outcome matters.", "You are more receptive to feedback delivered directly and immediately. If someone is softening the message, ask them to be more specific — you will absorb it better.", "For formal training, prioritise experiential and simulation-based formats over reading or lecture. You engage when there is a problem to solve, not content to receive."],
+    ml: ["Give them a clear mandate and stay out of the detail. They do not need to be managed — they need to be pointed at the right problem and trusted to pursue it.", "Intervene early if pace is creating collateral damage with peers or stakeholders. They will not always see it themselves.", "Challenge them on the how, not just the what. Results will be stronger and more sustainable when the team is with them.", "Disagree with them directly and with evidence — they respect it and will respond well. Vague feedback will be dismissed."],
+    mr: ["Recognition through increased responsibility lands far better than public praise. Give them the harder problem.", "Acknowledge results specifically and quickly — they notice when the effort-to-recognition ratio is off.", "Avoid performative recognition in group settings. A direct, private acknowledgement of a specific outcome is more meaningful."],
+    mw: ["Watch for the moment where pace tips into control. Under stress they can narrow to execution and disengage the team.", "They will disengage if over-managed or if their authority is repeatedly undermined. Address this before it becomes a retention issue.", "Their directness can create friction with peers who have a different style. Coach them on adapting without compromising their authenticity."],
+    mpt: ["This person has the profile to lead at a significantly higher level of complexity. The investment to make now is in their leadership range — specifically, building and developing others rather than delivering through personal effort.", "Stretch assignments work better than formal programmes. Put them in a room with a hard problem and a team to lead through it.", "If you want to retain them, make their growth visible. They need to see the path forward — stasis feels like regression."],
+    mln: ["This person learns by doing. The most effective development investment is real-world stretch, not classroom time. Put them in situations that require the capability before they have fully developed it — that is where their growth happens fastest.", "Deliver feedback directly and immediately. They will not process a softened or delayed message as well as a direct, specific one delivered in the moment.", "If formal training is required, choose experiential, scenario-based, or simulation-driven formats. Passive content delivery will not hold their attention or produce lasting change.", "Do not over-invest in pre-work or pre-reading for this profile. They will engage more deeply in the session if the structure allows them to act, decide, and debrief."]
+  },
+  I: {
+    name: "The Analyst", tag: "Evidence-based, precise, and thorough. You find what others miss and back every decision with the depth of knowledge to defend it.",
+    str: ["You bring rigour to decisions that others would make on instinct. In environments where the cost of error is high, this is an extraordinary asset.", "You prepare thoroughly and it shows — your analysis is typically the most complete in the room.", "You ask the question no one else thought to ask. Your pattern recognition is strong and your judgment, once formed, is sound.", "You are a steadying influence under pressure. Where others react, you assess."],
+    bs: ["You can wait for more information than the situation requires. The threshold between enough to decide and comfortable to decide is a gap worth closing.", "Your communication can front-load context when the audience needs the conclusion first. This creates friction with more action-oriented stakeholders.", "You can be slow to commit in group settings, which can read as hesitation — even when you have already formed a clear view.", "When you do not respect the quality of someone's thinking, it can show. Managing this is worth the effort."],
+    cm: ["Lead with your recommendation, then your reasoning. Most audiences engage better in that order — even when the analysis is what makes the recommendation credible.", "In real-time conversations, name your thinking process: 'I want to check one thing before I answer.' It signals rigour rather than uncertainty.", "Written communication is your strongest channel. Invest in it. A well-structured brief from you will do more work than a longer verbal explanation.", "For instinct-driven stakeholders, translate your analysis into a single clear recommendation. Give them the landing point — they can ask for the evidence if they want it."],
+    pt: ["Your potential trajectory is specialist or advisory leadership — the person whose judgment is sought because the quality of their thinking is beyond question.", "The growth edge is influence. You can already out-think most rooms. The next level is learning to land your thinking in a way that moves people, not just informs them.", "One development focus: get comfortable delivering a position before you feel fully ready. Calibrate the cost of delay against the cost of imperfection."],
+    ln: ["You learn best when you can go deep before you apply. Jumping into practice before you understand the theory produces frustration, not insight — give yourself permission to study first.", "You process feedback better with time. If someone delivers significant feedback in a live conversation, ask for the chance to come back to it. Your response after reflection will be more useful.", "The development format that works best for you is structured learning with depth — reading, research, case study analysis, and expert input. You engage when the intellectual substance is present.", "Peer learning works well for you when the peers are credible. You will disengage from group learning where the level of thinking is below yours — choose your cohort carefully.", "For formal training, prioritise programmes with rigorous content, expert facilitators, and time for analysis. Experiential formats work best when followed by structured debrief."],
+    ml: ["Give them the full picture. Filtered or simplified information frustrates them and erodes trust.", "Allow thinking time before expecting a response. In meetings, let them know the question in advance — the quality of their contribution is worth the preparation.", "Do not rush them to a position in real-time if the stakes are high. A brief pause request is legitimate and produces better outcomes.", "Engage with the substance of their analysis — they notice when people skim the work and it affects their motivation."],
+    mr: ["Acknowledge the quality of their thinking specifically — not just the outcome, but the how.", "Avoid generic praise. They will not believe it and will discount everything that follows.", "Peer recognition from people they respect matters more than formal acknowledgement. Create the conditions for that."],
+    mw: ["Watch for analysis paralysis under time pressure. Help them identify their minimum decision threshold early in a project, not when the decision is already late.", "They can disengage when asked to work at a pace or quality level that conflicts with their standards. Manage expectations explicitly on both sides.", "Protect them from environments that reward speed over accuracy — it is not where they thrive."],
+    mpt: ["This person has genuine specialist depth that, developed with intentionality, becomes a competitive advantage for your team and organisation.", "The investment to make is in their ability to influence. Put them in situations where they have to land their thinking with people who think differently — under real stakes.", "If you want to develop them into broader leadership, give them people to lead, not just problems to solve. The relational muscle needs deliberate exercise."],
+    mln: ["This person learns through depth and preparation. The most effective development investment is structured, high-quality content — expert-led programmes, rigorous reading, and case-based analysis. Do not rush them into practice before they have built the conceptual foundation.", "Allow processing time after significant feedback or learning experiences. Schedule a follow-up conversation rather than expecting an immediate response. The quality of their reflection is worth the wait.", "Peer learning works for this profile when the cohort is strong. Invest in connecting them with practitioners at or above their level — the intellectual stimulation is what produces engagement.", "Avoid experiential formats that prioritise action over understanding. Scenario-based learning works best for this profile when followed by structured debrief that connects the experience to the theory."]
+  },
+  C: {
+    name: "The Connector", tag: "People-first, trust-building, and culturally aware. You create the environment where teams perform — and you do it without being asked.",
+    str: ["You build trust quickly and it is genuine — people can tell the difference and yours is the real thing.", "You read rooms accurately. Your situational awareness of how people are tracking is a significant operational asset, particularly under pressure.", "You develop the people around you naturally. Capability growth in your team is not a programme — it is a by-product of how you work.", "You create the conditions for honest conversation. Teams that work with you tend to surface problems earlier, which means they get fixed earlier."],
+    bs: ["You can soften a message so much that the accountability is lost. The person on the receiving end feels heard but not clear. Clarity is the kindness.", "You may avoid a difficult conversation longer than the situation warrants — and absorb the cost of the delay yourself before anyone else notices.", "Your default is to protect team morale. Taken too far, it can shield people from the feedback they need to grow.", "You can carry the emotional weight of the team in a way that accumulates unseen. Pay attention to where your capacity is going."],
+    cm: ["Your natural communication style is warm and conversational — an asset in trust-building and coaching. In high-stakes settings, add more structure: lead with the key point, then context.", "When you need to deliver difficult feedback, prepare the direct message first — then think about the frame. Starting with the frame often means the message never fully arrives.", "You are more effective in dialogue than broadcast communication. When you need to land something important, a conversation works better than a long written update.", "Name what you are observing in others — 'I noticed' is one of your most effective opening moves. It creates space without accusation."],
+    pt: ["Your potential is in cultural and leadership transformation at scale. The thing you do naturally — creating environments where people perform — is what organisations spend enormous energy trying to engineer.", "The growth edge is authority. You have the respect of your team. The next level is making sure that respect extends to the boardroom — adding commercial directness to your people acuity.", "One development focus: hold the accountability conversation earlier than feels comfortable. The relationship will not break — it will deepen."],
+    ln: ["You learn best in relationship — through conversation, shared experience, and working alongside people you respect and trust. Isolated study is harder for you than collaborative learning.", "Feedback lands best for you when the relationship with the person giving it feels genuine. Be aware of your instinct to discount feedback from sources you do not know well — separate the message from the messenger.", "The development format that works best for you is cohort-based learning, mentoring, peer coaching, and workshops where the relational dynamic is part of the design.", "You often learn as much from the debrief conversation as from the experience itself. Build in time to talk through what happened after significant moments — with a trusted colleague or a coach.", "For formal training, prioritise programmes that include group discussion, case-based peer learning, and relationship-building. Self-paced or solo content formats will hold your attention less well."],
+    ml: ["Check in genuinely and regularly — not just on the work, but on how they are tracking personally. They perform better when they feel seen.", "Be transparent about change before it happens. They absorb transition well when they have time to prepare and support their team through it.", "Involve them in decisions that affect people — they will add value and be more committed to the outcome.", "Do not mistake warmth for the absence of ambition. They want to grow and lead. Make sure that pathway is visible and real."],
+    mr: ["Tell them specifically about the impact they have had on people. 'Three people told me that conversation changed how they were approaching their work' is the most meaningful thing you can say.", "Acknowledge them privately as well as publicly — they value the genuine moment as much as the formal one.", "Connect their contribution to the team's outcomes — show them how their people investment translates to performance."],
+    mw: ["Watch for the quiet accumulation of emotional labour. They will carry the team without complaint until they are running on empty. Check in before the visible signs appear.", "If the culture around them is toxic or the relationship with their manager is strained, performance will degrade faster than other profiles. Relationship health is a performance variable.", "Coach them to deliver the hard message without softening it beyond recognition. They can do it — they just need permission and practice."],
+    mpt: ["This person can build something that outlasts them — a team culture, a capability framework, a way of working that becomes the standard. That is rare and valuable.", "The investment to make is in their commercial confidence and willingness to be directive when the situation requires it. They have the relational foundation — add the authority.", "Give them a leadership challenge that requires them to hold firm under pressure, not just support."],
+    mln: ["This person learns through relationship and shared experience. The most effective development investment is cohort-based learning, mentoring, and peer coaching — formats where the relational dynamic is part of the design, not incidental to it.", "Pair them with a mentor or coach they genuinely respect. The quality of that relationship will determine the quality of the development. A technically strong but relationally cold programme will not produce the same return.", "Allow time for debrief and reflection after learning experiences. The conversation after the training often matters more than the training itself for this profile.", "Be thoughtful about how feedback is delivered. Feedback from someone they trust will land well. Feedback from someone who has not invested in the relationship may be resisted — not because they are fragile, but because trust is how they process information."]
+  },
+  S: {
+    name: "The Custodian", tag: "Process-driven, precise, and consistent. You are the person who makes sure the standards hold — not just in audits, but on every ordinary day.",
+    str: ["You create the reliability that organisations depend on and rarely notice until it is absent. Your standards protect performance when the environment is busy, short-staffed, or under pressure.", "You build systems that actually work — not because they are theoretically sound, but because you have thought through how they will be executed in practice.", "Your consistency builds deep trust over time. People know what to expect from you and that predictability is a genuine asset in complex organisations.", "You catch the things that others walk past. Your attention to process integrity is a form of risk management that most people in your organisation cannot replicate."],
+    bs: ["When the situation calls for flexibility, you can stay with the process longer than is helpful. The framework exists to serve the outcome — not the other way around.", "Change can land harder for you than for other profiles, particularly when it is not well-explained or poorly sequenced. This is worth naming so you can manage it intentionally.", "You can underweight the relational dimension of a situation — sometimes the right process still needs the right conversation before it will land.", "Perfectionism in execution can slow you or your team when a good-enough version would have served the purpose."],
+    cm: ["Your written and structured communication is strong — lean into it. A well-prepared briefing note or documented process from you is a significant contribution.", "In real-time conversation, try leading with the outcome you are trying to achieve before walking through the steps. It helps people with different styles stay oriented.", "When you need people to adopt a new process or standard, explain the why before the how. People follow the process more consistently when they understand the purpose behind it.", "For instinct-driven stakeholders, translate your process thinking into a single clear expectation. Give them the standard — not the full methodology."],
+    pt: ["Your potential is in creating the infrastructure of sustained performance — the frameworks, standards, and systems that allow an organisation to execute consistently at scale.", "The growth edge is adaptability. You already know how to build things that hold. The next level is building things that can flex when the environment demands it without losing their integrity.", "One development focus: practise making one decision per week that is not fully supported by a process or precedent. Trust your judgment. You will find you are right more often than you expect."],
+    ln: ["You learn best through structure — clear frameworks, logical sequences, worked examples, and defined checkpoints. Ambiguous or unstructured learning environments produce frustration, not insight.", "You need to understand how new learning connects to existing knowledge and process before you can fully adopt it. Give yourself time to map the new information onto what you already know — this is not slowness, it is how you build durable understanding.", "Feedback lands best for you when it is specific, evidence-based, and anchored to a defined standard. Abstract or general feedback is hard to act on. Ask for an example if one is not provided.", "The development format that works best for you is structured programmes with clear learning objectives, sequential content, and practical tools you can take back and apply immediately.", "You are likely to revisit learning materials after the fact — your retention improves when you have documentation, frameworks, or reference tools to return to. Request them if they are not provided."],
+    ml: ["Provide clarity on expectations upfront and change them as rarely and as explicitly as possible. Unexplained shifts in direction are disproportionately costly for this profile.", "Give them time to prepare for change — a heads-up before the announcement, not after. They will implement it better and support it more consistently.", "Acknowledge their consistency and reliability explicitly. It is easy to take for granted and they notice when it is invisible.", "Engage with the substance of their process thinking — do not dismiss it as over-engineering without understanding the risk it is designed to manage."],
+    mr: ["Acknowledge their consistency specifically — 'the standard in your area has held even through the busiest periods' is exactly the right recognition for this profile.", "Avoid vague or generic praise. They prefer specific, evidence-based acknowledgement over broad positive statements.", "Reliability and follow-through are their currency. If you say you will do something, do it. It matters more to them than to most."],
+    mw: ["Watch for resistance when change is poorly communicated or sequenced. The resistance is usually a signal that the change has not been adequately explained — fix the communication before you address the resistance.", "Perfectionism can become a bottleneck. Coach them on the difference between the standard required and the standard that is possible.", "They can under-advocate for themselves. Make sure their contribution is visible to the people who need to see it."],
+    mpt: ["This person can build the operating infrastructure that allows your team or organisation to perform at a higher level consistently. Most organisations cannot do this well.", "The investment to make is in their adaptability and judgment under ambiguity. Put them in situations where the process does not yet exist and let them create it — with the expectation that it will need to evolve.", "If you want to develop them for broader leadership, give them a change programme to own. Not just to implement — to design and lead."],
+    mln: ["This person learns through structure. The most effective development investment is well-designed programmes with clear objectives, logical sequencing, and practical tools. Do not ask them to learn in ambiguous or unstructured environments — it produces anxiety, not capability.", "Provide documentation, frameworks, and reference materials as part of any development experience. This profile revisits materials after the fact and their retention is stronger when they have something to return to.", "Feedback must be specific and anchored to a defined standard or example to land effectively. Abstract developmental feedback will not produce change. Ask the provider to be concrete: what specifically, in which situation, and against what expectation.", "Allow time for integration — this profile absorbs new learning incrementally and may not demonstrate the capability immediately after training. Build in application checkpoints at 30 and 60 days rather than expecting immediate transfer."]
+  }
+};
+
+let answers = [];
+let current = 0;
+let userName = "";
+
+function startAssessment() {
+  userName = document.getElementById('firstname').value.trim() || 'You';
+  document.getElementById('screen-intro').classList.remove('active');
+  document.getElementById('screen-question').classList.add('active');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = QUESTIONS[current];
+  const pct = Math.round((current / QUESTIONS.length) * 100);
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-dim').textContent = q.g;
+  document.getElementById('prog-count').textContent = (current + 1) + ' of ' + QUESTIONS.length;
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('btn-back').style.visibility = current === 0 ? 'hidden' : 'visible';
+
+  const list = document.getElementById('options-list');
+  list.innerHTML = '';
+  const saved = answers[current];
+  q.o.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn' + (saved && saved.i === i ? ' selected' : '');
+    btn.textContent = opt[0];
+    btn.onclick = () => {
+      document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      answers[current] = { i, v: opt[1] };
+      document.getElementById('btn-next').disabled = false;
+    };
+    list.appendChild(btn);
+  });
+  document.getElementById('btn-next').disabled = !saved;
+}
+
+function goBack() {
+  if (current > 0) { current--; renderQuestion(); }
+}
+
+function goNext() {
+  if (!answers[current]) return;
+  if (current < QUESTIONS.length - 1) { current++; renderQuestion(); }
+  else { buildReport(); }
+}
+
+function buildReport() {
+  const scores = { D: 0, I: 0, C: 0, S: 0 };
+  answers.forEach(a => { if (a && scores[a.v] !== undefined) scores[a.v]++; });
+  const total = Object.values(scores).reduce((a, b) => a + b, 0) || 1;
+  const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+  const top = sorted[0][0];
+  const code = sorted.map(e => e[0]).join('');
+  const P = PROFILES[top];
+
+  document.getElementById('res-code').textContent = code;
+  document.getElementById('res-name').textContent = P.name;
+  document.getElementById('res-tagline').textContent = P.tag;
+
+  const barsEl = document.getElementById('dim-bars-content');
+  barsEl.innerHTML = '';
+  [['Drive', 'D'], ['Insight', 'I'], ['Connection', 'C'], ['Structure', 'S']].forEach(([label, key]) => {
+    const pct = Math.round((scores[key] / total) * 100);
+    barsEl.innerHTML += `<div class="dim-row"><span class="dim-label">${label}</span><div class="dim-bar-bg"><div class="dim-bar-fill" style="width:${pct}%"></div></div><span class="dim-pct">${pct}%</span></div>`;
+  });
+
+  document.getElementById('tab-me').innerHTML = `
+    <div class="section-label">Your strengths</div>
+    ${P.str.map(s => `<div class="card card-green">${s}</div>`).join('')}
+    <div class="section-label">Blind spots to be mindful of</div>
+    ${P.bs.map(s => `<div class="card card-amber">${s}</div>`).join('')}
+    <div class="section-label">How you communicate</div>
+    ${P.cm.map(s => `<div class="card card-neutral"><div class="icv">${s}</div></div>`).join('')}
+    <div class="section-label">Your future potential</div>
+    ${P.pt.map(s => `<div class="card card-purple">${s}</div>`).join('')}
+  `;
+
+  document.getElementById('tab-learn').innerHTML = `
+    <div class="card card-neutral" style="margin-bottom:1rem"><div class="card-label">About this section</div><div class="icv">This is not about intelligence or effort. It is about the conditions under which you absorb, retain, and apply new learning most effectively. Understanding your learning profile means you can seek out the right development experiences — and get more from the ones that come your way.</div></div>
+    <div class="section-label">How you learn best</div>
+    ${P.ln.slice(0, 3).map(s => `<div class="card card-learn">${s}</div>`).join('')}
+    <div class="section-label">How to get the most from feedback</div>
+    <div class="card card-learn">${P.ln[3]}</div>
+    <div class="section-label">The training formats that work best for you</div>
+    <div class="card card-learn">${P.ln[4]}</div>
+    <div class="section-label">Your development focus</div>
+    ${P.pt.map(s => `<div class="card card-purple">${s}</div>`).join('')}
+  `;
+
+  document.getElementById('tab-mgr').innerHTML = `
+    <div class="card card-neutral" style="margin-bottom:1rem"><div class="card-label">About this guide</div><div class="icv">This section is written for the person who leads ${userName}. It translates their profile into practical guidance on how to bring out their best, how to invest in their development, and where their greatest potential sits.</div></div>
+    <div class="section-label">How to lead ${userName} at their best</div>
+    ${P.ml.map(s => `<div class="card card-green">${s}</div>`).join('')}
+    <div class="section-label">How to recognise them in a way that lands</div>
+    ${P.mr.map(s => `<div class="card card-neutral"><div class="icv">${s}</div></div>`).join('')}
+    <div class="section-label">What to watch and how to manage it</div>
+    ${P.mw.map(s => `<div class="card card-amber">${s}</div>`).join('')}
+    <div class="section-label">Their future potential — what to invest in</div>
+    ${P.mpt.map(s => `<div class="card card-purple">${s}</div>`).join('')}
+    <div class="section-label">How to design their development <span class="badge">learning profile</span></div>
+    ${P.mln.map(s => `<div class="card card-learn">${s}</div>`).join('')}
+  `;
+
+  document.getElementById('screen-question').classList.remove('active');
+  document.getElementById('screen-result').classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + id).classList.add('active');
+}
+
+function resetAll() {
+  answers = []; current = 0; userName = '';
+  document.getElementById('firstname').value = '';
+  document.getElementById('screen-result').classList.remove('active');
+  document.getElementById('screen-intro').classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
+  document.querySelectorAll('.tab-panel').forEach((p, i) => p.classList.toggle('active', i === 0));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
