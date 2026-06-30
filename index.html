@@ -656,6 +656,30 @@
     flex-wrap: wrap;
     justify-content: center;
   }
+  .email-provider-row {
+    display: flex;
+    gap: 8px;
+    max-width: 420px;
+    margin: 0.85rem auto 0;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .provider-btn {
+    flex: 1;
+    min-width: 110px;
+    background: var(--green-deep);
+    color: var(--off-white);
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .provider-btn:hover { background: var(--green-mid); transform: translateY(-1px); }
+  .provider-label { white-space: nowrap; }
   .email-input {
     flex: 1;
     min-width: 200px;
@@ -847,10 +871,20 @@
 
     <div class="email-block">
       <div class="email-block-title">Email yourself a copy of this report</div>
-      <div class="email-block-sub">Enter your email address and we will open a pre-filled email with your full report ready to send to yourself.</div>
+      <div class="email-block-sub">Enter your email address, then choose Gmail or Outlook for a quick summary, or Mail app for the complete report in full.</div>
       <div class="email-row">
         <input type="email" id="email-input" class="email-input" placeholder="you@company.com" autocomplete="email">
-        <button class="btn-primary" onclick="emailReport()">Email my report</button>
+      </div>
+      <div class="email-provider-row">
+        <button class="provider-btn" onclick="emailReport('gmail')">
+          <span class="provider-label">Gmail</span>
+        </button>
+        <button class="provider-btn" onclick="emailReport('outlook')">
+          <span class="provider-label">Outlook</span>
+        </button>
+        <button class="provider-btn" onclick="emailReport('default')">
+          <span class="provider-label">Mail app</span>
+        </button>
       </div>
       <div class="email-note" id="email-note"></div>
     </div>
@@ -1118,7 +1152,7 @@ function plainList(items) {
   return items.map(s => '- ' + s).join('\n');
 }
 
-function emailReport() {
+function emailReport(provider) {
   const input = document.getElementById('email-input');
   const note = document.getElementById('email-note');
   const addr = input.value.trim();
@@ -1198,12 +1232,50 @@ function emailReport() {
   lines.push('positivelypowered.net');
 
   const subject = encodeURIComponent('Your Loss Leader Profile — ' + code + ' (' + name + ')');
-  const bodyText = encodeURIComponent(lines.join('\n'));
-  const mailto = 'mailto:' + encodeURIComponent(addr) + '?subject=' + subject + '&body=' + bodyText;
+  const toAddr = encodeURIComponent(addr);
 
-  window.location.href = mailto;
+  let url;
+  let providerLabel;
 
-  note.textContent = 'Opening your email app now...';
+  if (provider === 'gmail' || provider === 'outlook') {
+    // Web mail providers have strict URL length limits, so send a short
+    // summary with a prompt to view the full report on screen.
+    const shortLines = [];
+    shortLines.push('Your Loss Leader Profile result: ' + code + ' — ' + name);
+    shortLines.push(tagline);
+    shortLines.push('');
+    shortLines.push('TOP STRENGTH');
+    shortLines.push('- ' + P.str[0]);
+    shortLines.push('');
+    shortLines.push('KEY BLIND SPOT TO WATCH');
+    shortLines.push('- ' + P.bs[0]);
+    shortLines.push('');
+    shortLines.push('FUTURE POTENTIAL');
+    shortLines.push('- ' + P.pt[0]);
+    shortLines.push('');
+    shortLines.push('Your full report, including the complete strengths, blind spots, communication style, how you learn, and the manager guide, is available on screen at the Loss Leader Profile page. For the complete written copy, use the "Mail app" option instead, which includes the full report in the email body.');
+    shortLines.push('');
+    shortLines.push('With clarity and conviction, Sophie.');
+    shortLines.push('Positively Powered — positivelypowered.net');
+    const shortBody = encodeURIComponent(shortLines.join('\n'));
+
+    if (provider === 'gmail') {
+      url = 'https://mail.google.com/mail/?view=cm&fs=1&to=' + toAddr + '&su=' + subject + '&body=' + shortBody;
+      providerLabel = 'Gmail';
+    } else {
+      url = 'https://outlook.office.com/mail/deeplink/compose?to=' + toAddr + '&subject=' + subject + '&body=' + shortBody;
+      providerLabel = 'Outlook';
+    }
+    window.open(url, '_blank');
+  } else {
+    // Default mail app via mailto can comfortably carry the full report
+    const bodyText = encodeURIComponent(lines.join('\n'));
+    url = 'mailto:' + toAddr + '?subject=' + subject + '&body=' + bodyText;
+    providerLabel = 'your default mail app';
+    window.location.href = url;
+  }
+
+  note.textContent = 'Opening ' + providerLabel + ' now...';
   note.className = 'email-note success';
 }
 
