@@ -623,6 +623,63 @@
     line-height: 1.6;
   }
 
+  /* ── EMAIL BLOCK ── */
+  .email-block {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem 1.75rem;
+    margin-top: 1.5rem;
+    text-align: center;
+  }
+  .email-block-title {
+    font-family: 'Lora', serif;
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 0.4rem;
+  }
+  .email-block-sub {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1.1rem;
+    max-width: 440px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .email-row {
+    display: flex;
+    gap: 8px;
+    max-width: 420px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .email-input {
+    flex: 1;
+    min-width: 200px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    padding: 0.65rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--off-white);
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .email-input:focus { border-color: var(--green-mid); }
+  .email-input.error { border-color: #C0392B; }
+  .email-note {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-top: 0.6rem;
+    min-height: 16px;
+  }
+  .email-note.error { color: #C0392B; }
+  .email-note.success { color: var(--green-mid); }
+
   /* ── CTA ── */
   .cta-block {
     background: var(--green-deep);
@@ -787,6 +844,17 @@
       With clarity and conviction, Sophie.<br>
       Positively Powered &nbsp;·&nbsp; <a href="https://www.positivelypowered.net" style="color:inherit">positivelypowered.net</a>
     </div>
+
+    <div class="email-block">
+      <div class="email-block-title">Email yourself a copy of this report</div>
+      <div class="email-block-sub">Enter your email address and we will open a pre-filled email with your full report ready to send to yourself.</div>
+      <div class="email-row">
+        <input type="email" id="email-input" class="email-input" placeholder="you@company.com" autocomplete="email">
+        <button class="btn-primary" onclick="emailReport()">Email my report</button>
+      </div>
+      <div class="email-note" id="email-note"></div>
+    </div>
+
     <div class="cta-block">
       <p>Want to map your whole team? Each person completes the profile and you compare results side by side to identify where collaboration flows and where friction is likely to surface.</p>
       <a href="https://www.positivelypowered.net" class="btn-cta">Get in touch &rarr;</a>
@@ -926,6 +994,7 @@ const PROFILES = {
 let answers = [];
 let current = 0;
 let userName = "";
+let lastTopProfile = "";
 
 function startAssessment() {
   userName = document.getElementById('firstname').value.trim() || 'You';
@@ -977,6 +1046,7 @@ function buildReport() {
   const total = Object.values(scores).reduce((a, b) => a + b, 0) || 1;
   const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
   const top = sorted[0][0];
+  lastTopProfile = top;
   const code = sorted.map(e => e[0]).join('');
   const P = PROFILES[top];
 
@@ -1040,9 +1110,109 @@ function switchTab(id, btn) {
   document.getElementById('tab-' + id).classList.add('active');
 }
 
+function isValidEmail(addr) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(addr);
+}
+
+function plainList(items) {
+  return items.map(s => '- ' + s).join('\n');
+}
+
+function emailReport() {
+  const input = document.getElementById('email-input');
+  const note = document.getElementById('email-note');
+  const addr = input.value.trim();
+
+  if (!isValidEmail(addr)) {
+    input.classList.add('error');
+    note.textContent = 'Please enter a valid email address.';
+    note.className = 'email-note error';
+    return;
+  }
+  input.classList.remove('error');
+
+  const code = document.getElementById('res-code').textContent;
+  const name = document.getElementById('res-name').textContent;
+  const tagline = document.getElementById('res-tagline').textContent;
+  const top = lastTopProfile;
+  const P = PROFILES[top];
+
+  const lines = [];
+  lines.push('LOSS LEADER PROFILE');
+  lines.push('Positively Powered');
+  lines.push('');
+  lines.push('Your result: ' + code + ' — ' + name);
+  lines.push(tagline);
+  lines.push('');
+  lines.push('========================================');
+  lines.push('MY REPORT');
+  lines.push('========================================');
+  lines.push('');
+  lines.push('YOUR STRENGTHS');
+  lines.push(plainList(P.str));
+  lines.push('');
+  lines.push('BLIND SPOTS TO BE MINDFUL OF');
+  lines.push(plainList(P.bs));
+  lines.push('');
+  lines.push('HOW YOU COMMUNICATE');
+  lines.push(plainList(P.cm));
+  lines.push('');
+  lines.push('YOUR FUTURE POTENTIAL');
+  lines.push(plainList(P.pt));
+  lines.push('');
+  lines.push('========================================');
+  lines.push('HOW I LEARN');
+  lines.push('========================================');
+  lines.push('');
+  lines.push('HOW YOU LEARN BEST');
+  lines.push(plainList(P.ln.slice(0, 3)));
+  lines.push('');
+  lines.push('HOW TO GET THE MOST FROM FEEDBACK');
+  lines.push('- ' + P.ln[3]);
+  lines.push('');
+  lines.push('TRAINING FORMATS THAT WORK BEST FOR YOU');
+  lines.push('- ' + P.ln[4]);
+  lines.push('');
+  lines.push('========================================');
+  lines.push('MANAGER GUIDE');
+  lines.push('========================================');
+  lines.push('');
+  lines.push('HOW TO LEAD ' + userName.toUpperCase() + ' AT THEIR BEST');
+  lines.push(plainList(P.ml));
+  lines.push('');
+  lines.push('HOW TO RECOGNISE THEM IN A WAY THAT LANDS');
+  lines.push(plainList(P.mr));
+  lines.push('');
+  lines.push('WHAT TO WATCH AND HOW TO MANAGE IT');
+  lines.push(plainList(P.mw));
+  lines.push('');
+  lines.push('THEIR FUTURE POTENTIAL — WHAT TO INVEST IN');
+  lines.push(plainList(P.mpt));
+  lines.push('');
+  lines.push('HOW TO DESIGN THEIR DEVELOPMENT');
+  lines.push(plainList(P.mln));
+  lines.push('');
+  lines.push('----------------------------------------');
+  lines.push('With clarity and conviction, Sophie.');
+  lines.push('Positively Powered');
+  lines.push('positivelypowered.net');
+
+  const subject = encodeURIComponent('Your Loss Leader Profile — ' + code + ' (' + name + ')');
+  const bodyText = encodeURIComponent(lines.join('\n'));
+  const mailto = 'mailto:' + encodeURIComponent(addr) + '?subject=' + subject + '&body=' + bodyText;
+
+  window.location.href = mailto;
+
+  note.textContent = 'Opening your email app now...';
+  note.className = 'email-note success';
+}
+
 function resetAll() {
-  answers = []; current = 0; userName = '';
+  answers = []; current = 0; userName = ''; lastTopProfile = '';
   document.getElementById('firstname').value = '';
+  document.getElementById('email-input').value = '';
+  document.getElementById('email-note').textContent = '';
+  document.getElementById('email-input').classList.remove('error');
   document.getElementById('screen-result').classList.remove('active');
   document.getElementById('screen-intro').classList.add('active');
   document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
