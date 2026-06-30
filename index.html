@@ -624,7 +624,8 @@
   }
 
   /* ── EMAIL BLOCK ── */
-  .email-block {
+  .email-block,
+  .pdf-block {
     background: #fff;
     border: 1px solid var(--border);
     border-radius: 14px;
@@ -632,6 +633,7 @@
     margin-top: 1.5rem;
     text-align: center;
   }
+  .pdf-block #pdf-btn { margin-top: 0.25rem; }
   .email-block-title {
     font-family: 'Lora', serif;
     font-size: 1.05rem;
@@ -869,6 +871,13 @@
       Positively Powered &nbsp;·&nbsp; <a href="https://www.positivelypowered.net" style="color:inherit">positivelypowered.net</a>
     </div>
 
+    <div class="pdf-block">
+      <div class="email-block-title">Download your full report as a PDF</div>
+      <div class="email-block-sub">A properly formatted copy of your complete report, ready to save, print, or attach to any email.</div>
+      <button class="btn-primary" id="pdf-btn" onclick="downloadReportPDF()">Download PDF &darr;</button>
+      <div class="email-note" id="pdf-note"></div>
+    </div>
+
     <div class="email-block">
       <div class="email-block-title">Email yourself a copy of this report</div>
       <div class="email-block-sub">Enter your email address, then choose Gmail or Outlook for a quick summary, or Mail app for the complete report in full.</div>
@@ -908,6 +917,7 @@
   </p>
 </footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 // ── PASSWORD GATE ──
 // To change the password, update the value below
@@ -1150,6 +1160,260 @@ function isValidEmail(addr) {
 
 function plainList(items) {
   return items.map(s => '- ' + s).join('\n');
+}
+
+function downloadReportPDF() {
+  const note = document.getElementById('pdf-note');
+  const btn = document.getElementById('pdf-btn');
+
+  if (typeof window.jspdf === 'undefined') {
+    note.textContent = 'PDF library failed to load. Please check your connection and try again.';
+    note.className = 'email-note error';
+    return;
+  }
+
+  btn.disabled = true;
+  const originalLabel = btn.textContent;
+  btn.textContent = 'Building your PDF...';
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+
+  const PAGE_W = doc.internal.pageSize.getWidth();
+  const PAGE_H = doc.internal.pageSize.getHeight();
+  const MARGIN = 56;
+  const CONTENT_W = PAGE_W - MARGIN * 2;
+
+  const GREEN_DEEP = [43, 92, 75];
+  const GREEN_MID = [61, 122, 100];
+  const SAGE = [168, 213, 181];
+  const TEXT_DARK = [26, 43, 37];
+  const TEXT_GREY = [90, 107, 99];
+  const OFFWHITE = [247, 244, 239];
+
+  let y = MARGIN;
+
+  function addHeaderFooter() {
+    const pageNum = doc.internal.getNumberOfPages();
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.setTextColor(...GREEN_MID);
+    doc.text('POSITIVELY POWERED', MARGIN, 32);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...TEXT_GREY);
+    doc.text('Loss Leader Profile', PAGE_W - MARGIN, 32, { align: 'right' });
+    doc.setDrawColor(212, 224, 216);
+    doc.setLineWidth(0.75);
+    doc.line(MARGIN, 40, PAGE_W - MARGIN, 40);
+
+    doc.setFontSize(8);
+    doc.setTextColor(...TEXT_GREY);
+    doc.text('With clarity and conviction, Sophie.', MARGIN, PAGE_H - 28);
+    doc.text('positivelypowered.net', PAGE_W - MARGIN, PAGE_H - 28, { align: 'right' });
+  }
+
+  function ensureSpace(needed) {
+    if (y + needed > PAGE_H - 50) {
+      doc.addPage();
+      addHeaderFooter();
+      y = MARGIN + 20;
+    }
+  }
+
+  function sectionHeading(text) {
+    ensureSpace(36);
+    y += 14;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.setTextColor(...GREEN_MID);
+    doc.text(text.toUpperCase(), MARGIN, y);
+    y += 4;
+    doc.setDrawColor(...GREEN_MID);
+    doc.setLineWidth(1);
+    doc.line(MARGIN, y, MARGIN + 40, y);
+    y += 16;
+  }
+
+  function cardBlock(text, accentColor, fillColor) {
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    const lines = doc.splitTextToSize(text, CONTENT_W - 28);
+    const blockH = lines.length * 13 + 16;
+    ensureSpace(blockH + 8);
+
+    doc.setFillColor(...fillColor);
+    doc.rect(MARGIN, y, CONTENT_W, blockH, 'F');
+    doc.setFillColor(...accentColor);
+    doc.rect(MARGIN, y, 3, blockH, 'F');
+
+    doc.setTextColor(...TEXT_DARK);
+    doc.text(lines, MARGIN + 14, y + 17);
+    y += blockH + 8;
+  }
+
+  function neutralBlock(text) {
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    const lines = doc.splitTextToSize(text, CONTENT_W - 28);
+    const blockH = lines.length * 13 + 16;
+    ensureSpace(blockH + 8);
+
+    doc.setDrawColor(212, 224, 216);
+    doc.setLineWidth(0.75);
+    doc.rect(MARGIN, y, CONTENT_W, blockH);
+
+    doc.setTextColor(...TEXT_DARK);
+    doc.text(lines, MARGIN + 14, y + 17);
+    y += blockH + 8;
+  }
+
+  // ── COVER ──
+  doc.setFillColor(...GREEN_DEEP);
+  doc.rect(0, 0, PAGE_W, PAGE_H, 'F');
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9);
+  doc.setTextColor(...SAGE);
+  doc.text('POSITIVELY POWERED', MARGIN, 90);
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(34);
+  doc.setTextColor(...OFFWHITE);
+  doc.text('Loss Leader Profile', MARGIN, 140);
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(11);
+  doc.setTextColor(...SAGE);
+  const subLines = doc.splitTextToSize('A personalised report on how you make decisions, communicate, and lead under pressure, with practical guidance for your manager.', CONTENT_W - 40);
+  doc.text(subLines, MARGIN, 170);
+
+  const code = document.getElementById('res-code').textContent;
+  const name = document.getElementById('res-name').textContent;
+  const tagline = document.getElementById('res-tagline').textContent;
+  const top = lastTopProfile;
+  const P = PROFILES[top];
+
+  let coverY = 280;
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(46);
+  doc.setTextColor(...SAGE);
+  doc.text(code, MARGIN, coverY);
+
+  coverY += 36;
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(20);
+  doc.setTextColor(...OFFWHITE);
+  doc.text(name, MARGIN, coverY);
+
+  coverY += 26;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(11);
+  doc.setTextColor(...SAGE);
+  const tagLines = doc.splitTextToSize(tagline, CONTENT_W - 40);
+  doc.text(tagLines, MARGIN, coverY);
+
+  if (userName && userName !== 'You') {
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(...SAGE);
+    doc.text('Prepared for ' + userName, MARGIN, PAGE_H - 90);
+  }
+  doc.setFontSize(9);
+  doc.text(new Date().toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' }), MARGIN, PAGE_H - 70);
+
+  // ── PAGE 2 onward: MY REPORT ──
+  doc.addPage();
+  addHeaderFooter();
+  y = MARGIN + 20;
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(16);
+  doc.setTextColor(...GREEN_DEEP);
+  doc.text('My Report', MARGIN, y);
+  y += 24;
+
+  sectionHeading('Your strengths');
+  P.str.forEach(s => cardBlock(s, GREEN_DEEP, [232, 243, 236]));
+
+  sectionHeading('Blind spots to be mindful of');
+  P.bs.forEach(s => cardBlock(s, [186, 117, 23], [250, 238, 218]));
+
+  sectionHeading('How you communicate');
+  P.cm.forEach(s => neutralBlock(s));
+
+  sectionHeading('Your future potential');
+  P.pt.forEach(s => cardBlock(s, [83, 74, 183], [238, 237, 254]));
+
+  // ── HOW I LEARN ──
+  doc.addPage();
+  addHeaderFooter();
+  y = MARGIN + 20;
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(16);
+  doc.setTextColor(...GREEN_DEEP);
+  doc.text('How I Learn', MARGIN, y);
+  y += 24;
+
+  sectionHeading('How you learn best');
+  P.ln.slice(0, 3).forEach(s => cardBlock(s, [29, 158, 117], [225, 245, 238]));
+
+  sectionHeading('How to get the most from feedback');
+  cardBlock(P.ln[3], [29, 158, 117], [225, 245, 238]);
+
+  sectionHeading('Training formats that work best for you');
+  cardBlock(P.ln[4], [29, 158, 117], [225, 245, 238]);
+
+  // ── MANAGER GUIDE ──
+  doc.addPage();
+  addHeaderFooter();
+  y = MARGIN + 20;
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(16);
+  doc.setTextColor(...GREEN_DEEP);
+  doc.text('Manager Guide', MARGIN, y);
+  y += 8;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  doc.setTextColor(...TEXT_GREY);
+  const mgrIntro = doc.splitTextToSize('Written for the person who leads ' + userName + '.', CONTENT_W);
+  y += 16;
+  doc.text(mgrIntro, MARGIN, y);
+  y += 14;
+
+  sectionHeading('How to lead ' + userName + ' at their best');
+  P.ml.forEach(s => cardBlock(s, GREEN_DEEP, [232, 243, 236]));
+
+  sectionHeading('How to recognise them in a way that lands');
+  P.mr.forEach(s => neutralBlock(s));
+
+  sectionHeading('What to watch and how to manage it');
+  P.mw.forEach(s => cardBlock(s, [186, 117, 23], [250, 238, 218]));
+
+  sectionHeading('Their future potential — what to invest in');
+  P.mpt.forEach(s => cardBlock(s, [83, 74, 183], [238, 237, 254]));
+
+  sectionHeading('How to design their development');
+  P.mln.forEach(s => cardBlock(s, [29, 158, 117], [225, 245, 238]));
+
+  // ── Page numbers ──
+  const totalPages = doc.internal.getNumberOfPages();
+  for (let i = 2; i <= totalPages; i++) {
+    doc.setPage(i);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(...TEXT_GREY);
+    doc.text(String(i - 1) + ' / ' + String(totalPages - 1), PAGE_W / 2, PAGE_H - 28, { align: 'center' });
+  }
+
+  const fileName = 'Loss-Leader-Profile-' + code + (userName && userName !== 'You' ? '-' + userName.replace(/[^a-zA-Z0-9]/g, '') : '') + '.pdf';
+  doc.save(fileName);
+
+  btn.disabled = false;
+  btn.textContent = originalLabel;
+  note.textContent = 'Your PDF has been downloaded.';
+  note.className = 'email-note success';
 }
 
 function emailReport(provider) {
