@@ -937,7 +937,7 @@
 
     <div id="saved-banner" class="saved-banner" style="display:none">
       <span class="saved-banner-text" id="saved-banner-text"></span>
-      <button class="saved-banner-btn" onclick="loadSavedResult()">View saved result</button>
+      <button class="saved-banner-btn" id="saved-banner-btn" onclick="loadSavedResult()">View saved result</button>
       <button class="saved-banner-dismiss" onclick="dismissBanner()">&#x2715;</button>
     </div>
 
@@ -1126,6 +1126,7 @@ function renderQuestion() {
       btn.classList.add('selected');
       answers[current] = { i, v: opt[1] };
       document.getElementById('btn-next').disabled = false;
+      saveProgress();
     };
     list.appendChild(btn);
   });
@@ -1221,10 +1222,43 @@ function switchTab(id, btn) {
 
 // ── SAVE / LOAD ──
 const STORAGE_KEY = 'llp_saved_result';
+const PROGRESS_KEY = 'llp_progress';
+
+function saveProgress() {
+  try {
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify({
+      answers,
+      current,
+      userName,
+      savedAt: new Date().toISOString()
+    }));
+  } catch(e) {}
+}
+
+function clearProgress() {
+  try { localStorage.removeItem(PROGRESS_KEY); } catch(e) {}
+}
+
+function resumeProgress() {
+  try {
+    const p = JSON.parse(localStorage.getItem(PROGRESS_KEY));
+    if (!p) return;
+    answers = p.answers || [];
+    current = p.current || 0;
+    userName = p.userName || 'You';
+    document.getElementById('firstname').value = userName !== 'You' ? userName : '';
+    dismissBanner();
+    document.getElementById('screen-intro').classList.remove('active');
+    document.getElementById('screen-question').classList.add('active');
+    renderQuestion();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } catch(e) {}
+}
 
 function saveResult(code, top, name) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ code, top, name, date: new Date().toISOString() }));
+    clearProgress();
   } catch(e) {}
 }
 
@@ -1291,6 +1325,22 @@ function loadSavedResult() {
 
 function checkForSaved() {
   try {
+    // Check for in-progress session first — takes priority
+    const progress = JSON.parse(localStorage.getItem(PROGRESS_KEY));
+    if (progress && progress.answers && progress.answers.length > 0) {
+      const answeredCount = progress.answers.filter(Boolean).length;
+      const name = progress.userName && progress.userName !== 'You' ? progress.userName : null;
+      const banner = document.getElementById('saved-banner');
+      const text = document.getElementById('saved-banner-text');
+      text.textContent = (name ? name + ', you' : 'You') + ' were on question ' + (progress.current + 1) + ' of ' + QUESTIONS.length + ' — ' + answeredCount + ' questions answered.';
+      banner.style.display = 'flex';
+      // Override the view button to resume instead
+      const resumeBtn = document.getElementById('saved-banner-btn');
+      resumeBtn.textContent = 'Continue where I left off';
+      resumeBtn.onclick = resumeProgress;
+      return;
+    }
+    // Fall back to completed result
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
     if (!saved) return;
     const P = PROFILES[saved.top];
@@ -1301,6 +1351,9 @@ function checkForSaved() {
     const text = document.getElementById('saved-banner-text');
     text.textContent = (name ? name + ', your' : 'Your') + ' previous result (' + saved.code + ' — ' + P.name + ', saved ' + date + ') is available.';
     banner.style.display = 'flex';
+    const viewBtn = document.getElementById('saved-banner-btn');
+    viewBtn.textContent = 'View saved result';
+    viewBtn.onclick = loadSavedResult;
   } catch(e) {}
 }
 
@@ -1481,7 +1534,9 @@ function downloadPDF(type) {
 function resetAll() {
   answers = []; current = 0; userName = ''; lastTopProfile = '';
   document.getElementById('firstname').value = '';
+  clearProgress();
   document.getElementById('screen-result').classList.remove('active');
+  document.getElementById('screen-question').classList.remove('active');
   document.getElementById('screen-intro').classList.add('active');
   document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', i===0));
   document.querySelectorAll('.tab-panel').forEach((p,i) => p.classList.toggle('active', i===0));
