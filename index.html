@@ -624,87 +624,151 @@
   }
 
   /* ── EMAIL BLOCK ── */
-  .email-block,
-  .pdf-block {
+  /* ── GROUPED SECTION BLOCKS ── */
+  .group-block {
+    border-radius: 10px;
+    padding: 1rem 1.1rem 1rem 1.3rem;
+    margin-bottom: 10px;
+  }
+  .group-block ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .group-block ul li {
+    font-size: 13.5px;
+    line-height: 1.65;
+    padding: 0.35rem 0 0.35rem 1.1rem;
+    position: relative;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+  }
+  .group-block ul li:last-child { border-bottom: none; }
+  .group-block ul li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    top: 0.38rem;
+    font-size: 14px;
+    line-height: 1.65;
+  }
+  .gb-green  { background: #E8F3EC; border-left: 4px solid #2B5C4B; }
+  .gb-green  li, .gb-green  li::before { color: #1a3d30; }
+  .gb-amber  { background: #FAEEDA; border-left: 4px solid #BA7517; }
+  .gb-amber  li, .gb-amber  li::before { color: #633806; }
+  .gb-purple { background: #EEEDFE; border-left: 4px solid #534AB7; }
+  .gb-purple li, .gb-purple li::before { color: #3C3489; }
+  .gb-learn  { background: #E1F5EE; border-left: 4px solid #1D9E75; }
+  .gb-learn  li, .gb-learn  li::before { color: #085041; }
+  .gb-neutral { background: #fff; border: 1px solid var(--border); border-left: 4px solid var(--border); }
+  .gb-neutral li, .gb-neutral li::before { color: var(--text-primary); }
+
+
+  .pdf-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 1.5rem;
+  }
+  @media (max-width: 520px) { .pdf-row { grid-template-columns: 1fr; } }
+  .pdf-card {
     background: #fff;
     border: 1px solid var(--border);
     border-radius: 14px;
-    padding: 1.5rem 1.75rem;
-    margin-top: 1.5rem;
+    padding: 1.35rem 1.5rem;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
   }
-  .pdf-block #pdf-btn { margin-top: 0.25rem; }
-  .email-block-title {
+  .pdf-card-label {
     font-family: 'Lora', serif;
-    font-size: 1.05rem;
+    font-size: 1rem;
     font-weight: 500;
     color: var(--text-primary);
-    margin-bottom: 0.4rem;
   }
-  .email-block-sub {
-    font-size: 13px;
+  .pdf-card-sub {
+    font-size: 12px;
     color: var(--text-secondary);
-    line-height: 1.6;
-    margin-bottom: 1.1rem;
-    max-width: 440px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  .email-row {
-    display: flex;
-    gap: 8px;
-    max-width: 420px;
-    margin: 0 auto;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  .email-provider-row {
-    display: flex;
-    gap: 8px;
-    max-width: 420px;
-    margin: 0.85rem auto 0;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-  .provider-btn {
+    line-height: 1.55;
     flex: 1;
-    min-width: 110px;
+  }
+  .pdf-card-btn { width: 100%; margin-top: 0.25rem; }
+  .pdf-note {
+    font-size: 12px;
+    color: var(--text-light);
+    min-height: 16px;
+  }
+  .pdf-note.success { color: var(--green-mid); }
+  .pdf-note.error { color: #C0392B; }
+
+  /* ── SAVED RESULT BANNER ── */
+  .saved-banner {
+    background: var(--green-tint);
+    border: 1px solid var(--green-sage);
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .saved-banner-text {
+    font-size: 13px;
+    color: var(--green-deep);
+    flex: 1;
+    min-width: 180px;
+  }
+  .saved-banner-btn {
     background: var(--green-deep);
     color: var(--off-white);
     border: none;
-    border-radius: 8px;
-    padding: 0.6rem 1rem;
-    font-family: 'Inter', sans-serif;
-    font-size: 13px;
+    border-radius: 6px;
+    padding: 0.4rem 0.9rem;
+    font-size: 12px;
     font-weight: 500;
     cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
+    white-space: nowrap;
   }
-  .provider-btn:hover { background: var(--green-mid); transform: translateY(-1px); }
-  .provider-label { white-space: nowrap; }
-  .email-input {
-    flex: 1;
-    min-width: 200px;
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    padding: 0.65rem 1rem;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--off-white);
-    color: var(--text-primary);
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .email-input:focus { border-color: var(--green-mid); }
-  .email-input.error { border-color: #C0392B; }
-  .email-note {
-    font-size: 12px;
+  .saved-banner-dismiss {
+    background: transparent;
+    border: none;
     color: var(--text-light);
-    margin-top: 0.6rem;
-    min-height: 16px;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 2px 4px;
+    line-height: 1;
   }
-  .email-note.error { color: #C0392B; }
-  .email-note.success { color: var(--green-mid); }
+
+  /* ── SAVED RESULT SCREEN ── */
+  .saved-hero {
+    background: var(--green-tint);
+    border: 1px solid var(--green-sage);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .saved-hero-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--green-mid);
+    margin-bottom: 0.4rem;
+  }
+  .saved-hero-code {
+    font-family: 'Lora', serif;
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: var(--green-deep);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.2rem;
+  }
+  .saved-hero-name {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
 
   /* ── CTA ── */
   .cta-block {
@@ -871,31 +935,25 @@
       Positively Powered &nbsp;·&nbsp; <a href="https://www.positivelypowered.net" style="color:inherit">positivelypowered.net</a>
     </div>
 
-    <div class="pdf-block">
-      <div class="email-block-title">Download your full report as a PDF</div>
-      <div class="email-block-sub">A properly formatted copy of your complete report, ready to save, print, or attach to any email.</div>
-      <button class="btn-primary" id="pdf-btn" onclick="downloadReportPDF()">Download PDF &darr;</button>
-      <div class="email-note" id="pdf-note"></div>
+    <div id="saved-banner" class="saved-banner" style="display:none">
+      <span class="saved-banner-text" id="saved-banner-text"></span>
+      <button class="saved-banner-btn" onclick="loadSavedResult()">View saved result</button>
+      <button class="saved-banner-dismiss" onclick="dismissBanner()">&#x2715;</button>
     </div>
 
-    <div class="email-block">
-      <div class="email-block-title">Email yourself a copy of this report</div>
-      <div class="email-block-sub">Enter your email address, then choose Gmail or Outlook for a quick summary, or Mail app for the complete report in full.</div>
-      <div class="email-row">
-        <input type="email" id="email-input" class="email-input" placeholder="you@company.com" autocomplete="email">
+    <div class="pdf-row">
+      <div class="pdf-card">
+        <div class="pdf-card-label">My report</div>
+        <div class="pdf-card-sub">Your strengths, blind spots, communication style, how you learn, and future potential.</div>
+        <button class="btn-primary pdf-card-btn" id="pdf-btn-me" onclick="downloadPDF('me')">Download my report &darr;</button>
+        <div class="pdf-note" id="pdf-note-me"></div>
       </div>
-      <div class="email-provider-row">
-        <button class="provider-btn" onclick="emailReport('gmail')">
-          <span class="provider-label">Gmail</span>
-        </button>
-        <button class="provider-btn" onclick="emailReport('outlook')">
-          <span class="provider-label">Outlook</span>
-        </button>
-        <button class="provider-btn" onclick="emailReport('default')">
-          <span class="provider-label">Mail app</span>
-        </button>
+      <div class="pdf-card">
+        <div class="pdf-card-label">Manager guide</div>
+        <div class="pdf-card-sub">How to lead, recognise, and develop this person, plus their future potential investment case.</div>
+        <button class="btn-primary pdf-card-btn" id="pdf-btn-mgr" onclick="downloadPDF('mgr')">Download manager guide &darr;</button>
+        <div class="pdf-note" id="pdf-note-mgr"></div>
       </div>
-      <div class="email-note" id="email-note"></div>
     </div>
 
     <div class="cta-block">
@@ -1084,6 +1142,10 @@ function goNext() {
   else { buildReport(); }
 }
 
+function groupBlock(items, colour) {
+  return `<div class="group-block gb-${colour}"><ul>${items.map(s => `<li>${s}</li>`).join('')}</ul></div>`;
+}
+
 function buildReport() {
   const scores = { D: 0, I: 0, C: 0, S: 0 };
   answers.forEach(a => { if (a && scores[a.v] !== undefined) scores[a.v]++; });
@@ -1107,40 +1169,43 @@ function buildReport() {
 
   document.getElementById('tab-me').innerHTML = `
     <div class="section-label">Your strengths</div>
-    ${P.str.map(s => `<div class="card card-green">${s}</div>`).join('')}
+    ${groupBlock(P.str, 'green')}
     <div class="section-label">Blind spots to be mindful of</div>
-    ${P.bs.map(s => `<div class="card card-amber">${s}</div>`).join('')}
+    ${groupBlock(P.bs, 'amber')}
     <div class="section-label">How you communicate</div>
-    ${P.cm.map(s => `<div class="card card-neutral"><div class="icv">${s}</div></div>`).join('')}
+    ${groupBlock(P.cm, 'neutral')}
     <div class="section-label">Your future potential</div>
-    ${P.pt.map(s => `<div class="card card-purple">${s}</div>`).join('')}
+    ${groupBlock(P.pt, 'purple')}
   `;
 
   document.getElementById('tab-learn').innerHTML = `
     <div class="card card-neutral" style="margin-bottom:1rem"><div class="card-label">About this section</div><div class="icv">This is not about intelligence or effort. It is about the conditions under which you absorb, retain, and apply new learning most effectively. Understanding your learning profile means you can seek out the right development experiences — and get more from the ones that come your way.</div></div>
     <div class="section-label">How you learn best</div>
-    ${P.ln.slice(0, 3).map(s => `<div class="card card-learn">${s}</div>`).join('')}
+    ${groupBlock(P.ln.slice(0, 3), 'learn')}
     <div class="section-label">How to get the most from feedback</div>
-    <div class="card card-learn">${P.ln[3]}</div>
-    <div class="section-label">The training formats that work best for you</div>
-    <div class="card card-learn">${P.ln[4]}</div>
+    ${groupBlock([P.ln[3]], 'learn')}
+    <div class="section-label">Training formats that work best for you</div>
+    ${groupBlock([P.ln[4]], 'learn')}
     <div class="section-label">Your development focus</div>
-    ${P.pt.map(s => `<div class="card card-purple">${s}</div>`).join('')}
+    ${groupBlock(P.pt, 'purple')}
   `;
 
   document.getElementById('tab-mgr').innerHTML = `
     <div class="card card-neutral" style="margin-bottom:1rem"><div class="card-label">About this guide</div><div class="icv">This section is written for the person who leads ${userName}. It translates their profile into practical guidance on how to bring out their best, how to invest in their development, and where their greatest potential sits.</div></div>
     <div class="section-label">How to lead ${userName} at their best</div>
-    ${P.ml.map(s => `<div class="card card-green">${s}</div>`).join('')}
+    ${groupBlock(P.ml, 'green')}
     <div class="section-label">How to recognise them in a way that lands</div>
-    ${P.mr.map(s => `<div class="card card-neutral"><div class="icv">${s}</div></div>`).join('')}
+    ${groupBlock(P.mr, 'neutral')}
     <div class="section-label">What to watch and how to manage it</div>
-    ${P.mw.map(s => `<div class="card card-amber">${s}</div>`).join('')}
+    ${groupBlock(P.mw, 'amber')}
     <div class="section-label">Their future potential — what to invest in</div>
-    ${P.mpt.map(s => `<div class="card card-purple">${s}</div>`).join('')}
+    ${groupBlock(P.mpt, 'purple')}
     <div class="section-label">How to design their development <span class="badge">learning profile</span></div>
-    ${P.mln.map(s => `<div class="card card-learn">${s}</div>`).join('')}
+    ${groupBlock(P.mln, 'learn')}
   `;
+
+  // Save result to localStorage
+  saveResult(code, top, userName);
 
   document.getElementById('screen-question').classList.remove('active');
   document.getElementById('screen-result').classList.add('active');
@@ -1154,407 +1219,280 @@ function switchTab(id, btn) {
   document.getElementById('tab-' + id).classList.add('active');
 }
 
-function isValidEmail(addr) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(addr);
+// ── SAVE / LOAD ──
+const STORAGE_KEY = 'llp_saved_result';
+
+function saveResult(code, top, name) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ code, top, name, date: new Date().toISOString() }));
+  } catch(e) {}
 }
 
-function plainList(items) {
-  return items.map(s => '- ' + s).join('\n');
+function loadSavedResult() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (!saved) return;
+    userName = saved.name || 'You';
+    lastTopProfile = saved.top;
+    // Rebuild the report screens with saved data
+    const P = PROFILES[saved.top];
+    const code = saved.code;
+    document.getElementById('res-code').textContent = code;
+    document.getElementById('res-name').textContent = P.name;
+    document.getElementById('res-tagline').textContent = P.tag;
+    // Dim bars — show even distribution for saved (scores not stored)
+    const xb = document.getElementById('dim-bars-content');
+    xb.innerHTML = [['Drive','D'],['Insight','I'],['Connection','C'],['Structure','S']].map(([l,k]) => {
+      const active = k === saved.top ? 40 : 20;
+      return `<div class="dim-row"><span class="dim-label">${l}</span><div class="dim-bar-bg"><div class="dim-bar-fill" style="width:${active}%"></div></div><span class="dim-pct">${k === saved.top ? 'Primary' : ''}</span></div>`;
+    }).join('');
+    document.getElementById('tab-me').innerHTML = `
+      <div class="section-label">Your strengths</div>
+      ${groupBlock(P.str, 'green')}
+      <div class="section-label">Blind spots to be mindful of</div>
+      ${groupBlock(P.bs, 'amber')}
+      <div class="section-label">How you communicate</div>
+      ${groupBlock(P.cm, 'neutral')}
+      <div class="section-label">Your future potential</div>
+      ${groupBlock(P.pt, 'purple')}
+    `;
+    document.getElementById('tab-learn').innerHTML = `
+      <div class="card card-neutral" style="margin-bottom:1rem"><div class="card-label">About this section</div><div class="icv">This is not about intelligence or effort. It is about the conditions under which you absorb, retain, and apply new learning most effectively.</div></div>
+      <div class="section-label">How you learn best</div>
+      ${groupBlock(P.ln.slice(0,3), 'learn')}
+      <div class="section-label">How to get the most from feedback</div>
+      ${groupBlock([P.ln[3]], 'learn')}
+      <div class="section-label">Training formats that work best for you</div>
+      ${groupBlock([P.ln[4]], 'learn')}
+      <div class="section-label">Your development focus</div>
+      ${groupBlock(P.pt, 'purple')}
+    `;
+    document.getElementById('tab-mgr').innerHTML = `
+      <div class="card card-neutral" style="margin-bottom:1rem"><div class="card-label">About this guide</div><div class="icv">This section is written for the person who leads ${userName}.</div></div>
+      <div class="section-label">How to lead ${userName} at their best</div>
+      ${groupBlock(P.ml, 'green')}
+      <div class="section-label">How to recognise them in a way that lands</div>
+      ${groupBlock(P.mr, 'neutral')}
+      <div class="section-label">What to watch and how to manage it</div>
+      ${groupBlock(P.mw, 'amber')}
+      <div class="section-label">Their future potential — what to invest in</div>
+      ${groupBlock(P.mpt, 'purple')}
+      <div class="section-label">How to design their development <span class="badge">learning profile</span></div>
+      ${groupBlock(P.mln, 'learn')}
+    `;
+    dismissBanner();
+    document.getElementById('screen-intro').classList.remove('active');
+    document.getElementById('screen-result').classList.add('active');
+    document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', i===0));
+    document.querySelectorAll('.tab-panel').forEach((p,i) => p.classList.toggle('active', i===0));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } catch(e) {}
 }
 
-function downloadReportPDF() {
-  const note = document.getElementById('pdf-note');
-  const btn = document.getElementById('pdf-btn');
+function checkForSaved() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (!saved) return;
+    const P = PROFILES[saved.top];
+    if (!P) return;
+    const name = saved.name && saved.name !== 'You' ? saved.name : null;
+    const date = new Date(saved.date).toLocaleDateString('en-AU', { day:'numeric', month:'short', year:'numeric' });
+    const banner = document.getElementById('saved-banner');
+    const text = document.getElementById('saved-banner-text');
+    text.textContent = (name ? name + ', your' : 'Your') + ' previous result (' + saved.code + ' — ' + P.name + ', saved ' + date + ') is available.';
+    banner.style.display = 'flex';
+  } catch(e) {}
+}
+
+function dismissBanner() {
+  const b = document.getElementById('saved-banner');
+  if (b) b.style.display = 'none';
+}
+
+// ── PDF GENERATION ──
+function downloadPDF(type) {
+  const btnId = type === 'me' ? 'pdf-btn-me' : 'pdf-btn-mgr';
+  const noteId = type === 'me' ? 'pdf-note-me' : 'pdf-note-mgr';
+  const btn = document.getElementById(btnId);
+  const note = document.getElementById(noteId);
 
   if (typeof window.jspdf === 'undefined') {
-    note.textContent = 'PDF library failed to load. Please check your connection and try again.';
-    note.className = 'email-note error';
+    note.textContent = 'PDF library is loading — please try again in a moment.';
+    note.className = 'pdf-note error';
     return;
   }
 
   btn.disabled = true;
-  const originalLabel = btn.textContent;
-  btn.textContent = 'Building your PDF...';
+  const orig = btn.textContent;
+  btn.textContent = 'Building PDF...';
 
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+  const PW = doc.internal.pageSize.getWidth();
+  const PH = doc.internal.pageSize.getHeight();
+  const M = 56;
+  const CW = PW - M * 2;
 
-  const PAGE_W = doc.internal.pageSize.getWidth();
-  const PAGE_H = doc.internal.pageSize.getHeight();
-  const MARGIN = 56;
-  const CONTENT_W = PAGE_W - MARGIN * 2;
+  const GD = [43,92,75], GM = [61,122,100], SG = [168,213,181];
+  const TD = [26,43,37], TG = [90,107,99], OW = [247,244,239];
 
-  const GREEN_DEEP = [43, 92, 75];
-  const GREEN_MID = [61, 122, 100];
-  const SAGE = [168, 213, 181];
-  const TEXT_DARK = [26, 43, 37];
-  const TEXT_GREY = [90, 107, 99];
-  const OFFWHITE = [247, 244, 239];
+  let y = M;
 
-  let y = MARGIN;
-
-  function addHeaderFooter() {
-    const pageNum = doc.internal.getNumberOfPages();
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8);
-    doc.setTextColor(...GREEN_MID);
-    doc.text('POSITIVELY POWERED', MARGIN, 32);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(...TEXT_GREY);
-    doc.text('Loss Leader Profile', PAGE_W - MARGIN, 32, { align: 'right' });
-    doc.setDrawColor(212, 224, 216);
-    doc.setLineWidth(0.75);
-    doc.line(MARGIN, 40, PAGE_W - MARGIN, 40);
-
-    doc.setFontSize(8);
-    doc.setTextColor(...TEXT_GREY);
-    doc.text('With clarity and conviction, Sophie.', MARGIN, PAGE_H - 28);
-    doc.text('positivelypowered.net', PAGE_W - MARGIN, PAGE_H - 28, { align: 'right' });
+  function hf() {
+    doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(...GM);
+    doc.text('POSITIVELY POWERED', M, 32);
+    doc.setFont('helvetica','normal'); doc.setTextColor(...TG);
+    doc.text(type === 'me' ? 'Loss Leader Profile — My Report' : 'Loss Leader Profile — Manager Guide', PW-M, 32, {align:'right'});
+    doc.setDrawColor(212,224,216); doc.setLineWidth(0.75); doc.line(M,40,PW-M,40);
+    doc.setFontSize(8); doc.setTextColor(...TG);
+    doc.text('With clarity and conviction, Sophie.', M, PH-28);
+    doc.text('positivelypowered.net', PW-M, PH-28, {align:'right'});
   }
 
-  function ensureSpace(needed) {
-    if (y + needed > PAGE_H - 50) {
-      doc.addPage();
-      addHeaderFooter();
-      y = MARGIN + 20;
-    }
+  function space(n=12) { ensureSpace(n); y += n; }
+
+  function ensureSpace(n) {
+    if (y + n > PH - 50) { doc.addPage(); hf(); y = M + 20; }
   }
 
-  function sectionHeading(text) {
-    ensureSpace(36);
+  function secHead(text) {
+    ensureSpace(36); y += 14;
+    doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.setTextColor(...GM);
+    doc.text(text.toUpperCase(), M, y);
+    y += 4; doc.setDrawColor(...GM); doc.setLineWidth(1); doc.line(M, y, M+36, y);
     y += 14;
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(11);
-    doc.setTextColor(...GREEN_MID);
-    doc.text(text.toUpperCase(), MARGIN, y);
-    y += 4;
-    doc.setDrawColor(...GREEN_MID);
-    doc.setLineWidth(1);
-    doc.line(MARGIN, y, MARGIN + 40, y);
-    y += 16;
   }
 
-  function cardBlock(text, accentColor, fillColor) {
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    const lines = doc.splitTextToSize(text, CONTENT_W - 28);
-    const blockH = lines.length * 13 + 16;
-    ensureSpace(blockH + 8);
-
-    doc.setFillColor(...fillColor);
-    doc.rect(MARGIN, y, CONTENT_W, blockH, 'F');
-    doc.setFillColor(...accentColor);
-    doc.rect(MARGIN, y, 3, blockH, 'F');
-
-    doc.setTextColor(...TEXT_DARK);
-    doc.text(lines, MARGIN + 14, y + 17);
-    y += blockH + 8;
+  function cardBlock(text, acc, fill) {
+    doc.setFont('helvetica','normal'); doc.setFontSize(10);
+    const lines = doc.splitTextToSize(text, CW-26);
+    const bh = lines.length * 13 + 16;
+    ensureSpace(bh+8);
+    doc.setFillColor(...fill); doc.rect(M, y, CW, bh, 'F');
+    doc.setFillColor(...acc); doc.rect(M, y, 3, bh, 'F');
+    doc.setTextColor(...TD); doc.text(lines, M+13, y+17);
+    y += bh+8;
   }
 
   function neutralBlock(text) {
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    const lines = doc.splitTextToSize(text, CONTENT_W - 28);
-    const blockH = lines.length * 13 + 16;
-    ensureSpace(blockH + 8);
-
-    doc.setDrawColor(212, 224, 216);
-    doc.setLineWidth(0.75);
-    doc.rect(MARGIN, y, CONTENT_W, blockH);
-
-    doc.setTextColor(...TEXT_DARK);
-    doc.text(lines, MARGIN + 14, y + 17);
-    y += blockH + 8;
+    doc.setFont('helvetica','normal'); doc.setFontSize(10);
+    const lines = doc.splitTextToSize(text, CW-26);
+    const bh = lines.length * 13 + 16;
+    ensureSpace(bh+8);
+    doc.setDrawColor(212,224,216); doc.setLineWidth(0.75); doc.rect(M, y, CW, bh);
+    doc.setTextColor(...TD); doc.text(lines, M+13, y+17);
+    y += bh+8;
   }
+
+  const code = document.getElementById('res-code').textContent;
+  const pName = document.getElementById('res-name').textContent;
+  const tagline = document.getElementById('res-tagline').textContent;
+  const P = PROFILES[lastTopProfile];
 
   // ── COVER ──
-  doc.setFillColor(...GREEN_DEEP);
-  doc.rect(0, 0, PAGE_W, PAGE_H, 'F');
-
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(9);
-  doc.setTextColor(...SAGE);
-  doc.text('POSITIVELY POWERED', MARGIN, 90);
-
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(34);
-  doc.setTextColor(...OFFWHITE);
-  doc.text('Loss Leader Profile', MARGIN, 140);
-
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(11);
-  doc.setTextColor(...SAGE);
-  const subLines = doc.splitTextToSize('A personalised report on how you make decisions, communicate, and lead under pressure, with practical guidance for your manager.', CONTENT_W - 40);
-  doc.text(subLines, MARGIN, 170);
-
-  const code = document.getElementById('res-code').textContent;
-  const name = document.getElementById('res-name').textContent;
-  const tagline = document.getElementById('res-tagline').textContent;
-  const top = lastTopProfile;
-  const P = PROFILES[top];
-
-  let coverY = 280;
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(46);
-  doc.setTextColor(...SAGE);
-  doc.text(code, MARGIN, coverY);
-
-  coverY += 36;
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(20);
-  doc.setTextColor(...OFFWHITE);
-  doc.text(name, MARGIN, coverY);
-
-  coverY += 26;
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(11);
-  doc.setTextColor(...SAGE);
-  const tagLines = doc.splitTextToSize(tagline, CONTENT_W - 40);
-  doc.text(tagLines, MARGIN, coverY);
-
+  doc.setFillColor(...GD); doc.rect(0,0,PW,PH,'F');
+  doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(...SG);
+  doc.text('POSITIVELY POWERED', M, 90);
+  doc.setFontSize(28); doc.setTextColor(...OW);
+  doc.text('Loss Leader Profile', M, 130);
+  doc.setFontSize(15); doc.setTextColor(...SG);
+  doc.text(type === 'me' ? 'My Report' : 'Manager Guide', M, 158);
+  doc.setFontSize(40); doc.setTextColor(...SG);
+  doc.text(code, M, 240);
+  doc.setFont('helvetica','bold'); doc.setFontSize(18); doc.setTextColor(...OW);
+  doc.text(pName, M, 272);
+  doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(...SG);
+  const tl = doc.splitTextToSize(tagline, CW-40);
+  doc.text(tl, M, 296);
+  if (type === 'mgr') {
+    doc.setFontSize(10); doc.setTextColor(...SG);
+    doc.text('Written for the person who leads ' + userName + '.', M, 346);
+  }
   if (userName && userName !== 'You') {
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.setTextColor(...SAGE);
-    doc.text('Prepared for ' + userName, MARGIN, PAGE_H - 90);
+    doc.setFontSize(10); doc.setTextColor(...SG);
+    doc.text((type === 'me' ? 'Prepared for ' : 'About ') + userName, M, PH-90);
   }
   doc.setFontSize(9);
-  doc.text(new Date().toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' }), MARGIN, PAGE_H - 70);
+  doc.text(new Date().toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'}), M, PH-70);
 
-  // ── PAGE 2 onward: MY REPORT ──
-  doc.addPage();
-  addHeaderFooter();
-  y = MARGIN + 20;
+  // ── CONTENT ──
+  doc.addPage(); hf(); y = M + 20;
 
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(16);
-  doc.setTextColor(...GREEN_DEEP);
-  doc.text('My Report', MARGIN, y);
-  y += 24;
+  if (type === 'me') {
+    doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.setTextColor(...GD);
+    doc.text('My Report', M, y); y += 24;
+    secHead('Your strengths');
+    P.str.forEach(s => cardBlock(s, GD, [232,243,236]));
+    secHead('Blind spots to be mindful of');
+    P.bs.forEach(s => cardBlock(s, [186,117,23], [250,238,218]));
+    secHead('How you communicate');
+    P.cm.forEach(s => neutralBlock(s));
+    secHead('Your future potential');
+    P.pt.forEach(s => cardBlock(s, [83,74,183], [238,237,254]));
 
-  sectionHeading('Your strengths');
-  P.str.forEach(s => cardBlock(s, GREEN_DEEP, [232, 243, 236]));
+    doc.addPage(); hf(); y = M + 20;
+    doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.setTextColor(...GD);
+    doc.text('How I Learn', M, y); y += 24;
+    secHead('How you learn best');
+    P.ln.slice(0,3).forEach(s => cardBlock(s, [29,158,117], [225,245,238]));
+    secHead('How to get the most from feedback');
+    cardBlock(P.ln[3], [29,158,117], [225,245,238]);
+    secHead('Training formats that work best for you');
+    cardBlock(P.ln[4], [29,158,117], [225,245,238]);
+    secHead('Your development focus');
+    P.pt.forEach(s => cardBlock(s, [83,74,183], [238,237,254]));
 
-  sectionHeading('Blind spots to be mindful of');
-  P.bs.forEach(s => cardBlock(s, [186, 117, 23], [250, 238, 218]));
-
-  sectionHeading('How you communicate');
-  P.cm.forEach(s => neutralBlock(s));
-
-  sectionHeading('Your future potential');
-  P.pt.forEach(s => cardBlock(s, [83, 74, 183], [238, 237, 254]));
-
-  // ── HOW I LEARN ──
-  doc.addPage();
-  addHeaderFooter();
-  y = MARGIN + 20;
-
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(16);
-  doc.setTextColor(...GREEN_DEEP);
-  doc.text('How I Learn', MARGIN, y);
-  y += 24;
-
-  sectionHeading('How you learn best');
-  P.ln.slice(0, 3).forEach(s => cardBlock(s, [29, 158, 117], [225, 245, 238]));
-
-  sectionHeading('How to get the most from feedback');
-  cardBlock(P.ln[3], [29, 158, 117], [225, 245, 238]);
-
-  sectionHeading('Training formats that work best for you');
-  cardBlock(P.ln[4], [29, 158, 117], [225, 245, 238]);
-
-  // ── MANAGER GUIDE ──
-  doc.addPage();
-  addHeaderFooter();
-  y = MARGIN + 20;
-
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(16);
-  doc.setTextColor(...GREEN_DEEP);
-  doc.text('Manager Guide', MARGIN, y);
-  y += 8;
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(10);
-  doc.setTextColor(...TEXT_GREY);
-  const mgrIntro = doc.splitTextToSize('Written for the person who leads ' + userName + '.', CONTENT_W);
-  y += 16;
-  doc.text(mgrIntro, MARGIN, y);
-  y += 14;
-
-  sectionHeading('How to lead ' + userName + ' at their best');
-  P.ml.forEach(s => cardBlock(s, GREEN_DEEP, [232, 243, 236]));
-
-  sectionHeading('How to recognise them in a way that lands');
-  P.mr.forEach(s => neutralBlock(s));
-
-  sectionHeading('What to watch and how to manage it');
-  P.mw.forEach(s => cardBlock(s, [186, 117, 23], [250, 238, 218]));
-
-  sectionHeading('Their future potential — what to invest in');
-  P.mpt.forEach(s => cardBlock(s, [83, 74, 183], [238, 237, 254]));
-
-  sectionHeading('How to design their development');
-  P.mln.forEach(s => cardBlock(s, [29, 158, 117], [225, 245, 238]));
-
-  // ── Page numbers ──
-  const totalPages = doc.internal.getNumberOfPages();
-  for (let i = 2; i <= totalPages; i++) {
-    doc.setPage(i);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.setTextColor(...TEXT_GREY);
-    doc.text(String(i - 1) + ' / ' + String(totalPages - 1), PAGE_W / 2, PAGE_H - 28, { align: 'center' });
+  } else {
+    doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.setTextColor(...GD);
+    doc.text('Manager Guide', M, y); y += 10;
+    doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(...TG);
+    const intro = doc.splitTextToSize('A practical guide for the person who leads ' + userName + '. Use this to understand how to bring out their best, invest in their development, and realise their full potential.', CW);
+    y += 14; doc.text(intro, M, y); y += intro.length * 14 + 10;
+    secHead('How to lead ' + userName + ' at their best');
+    P.ml.forEach(s => cardBlock(s, GD, [232,243,236]));
+    secHead('How to recognise them in a way that lands');
+    P.mr.forEach(s => neutralBlock(s));
+    secHead('What to watch and how to manage it');
+    P.mw.forEach(s => cardBlock(s, [186,117,23], [250,238,218]));
+    secHead('Their future potential — what to invest in');
+    P.mpt.forEach(s => cardBlock(s, [83,74,183], [238,237,254]));
+    secHead('How to design their development');
+    P.mln.forEach(s => cardBlock(s, [29,158,117], [225,245,238]));
   }
 
-  const fileName = 'Loss-Leader-Profile-' + code + (userName && userName !== 'You' ? '-' + userName.replace(/[^a-zA-Z0-9]/g, '') : '') + '.pdf';
-  doc.save(fileName);
+  // page numbers (skip cover)
+  const total = doc.internal.getNumberOfPages();
+  for (let i = 2; i <= total; i++) {
+    doc.setPage(i);
+    doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(...TG);
+    doc.text(String(i-1) + ' / ' + String(total-1), PW/2, PH-28, {align:'center'});
+  }
+
+  const label = type === 'me' ? 'My-Report' : 'Manager-Guide';
+  const namePart = userName && userName !== 'You' ? '-' + userName.replace(/[^a-zA-Z0-9]/g,'') : '';
+  doc.save('Loss-Leader-Profile-' + label + '-' + code + namePart + '.pdf');
 
   btn.disabled = false;
-  btn.textContent = originalLabel;
-  note.textContent = 'Your PDF has been downloaded.';
-  note.className = 'email-note success';
-}
-
-function emailReport(provider) {
-  const input = document.getElementById('email-input');
-  const note = document.getElementById('email-note');
-  const addr = input.value.trim();
-
-  if (!isValidEmail(addr)) {
-    input.classList.add('error');
-    note.textContent = 'Please enter a valid email address.';
-    note.className = 'email-note error';
-    return;
-  }
-  input.classList.remove('error');
-
-  const code = document.getElementById('res-code').textContent;
-  const name = document.getElementById('res-name').textContent;
-  const tagline = document.getElementById('res-tagline').textContent;
-  const top = lastTopProfile;
-  const P = PROFILES[top];
-
-  const lines = [];
-  lines.push('LOSS LEADER PROFILE');
-  lines.push('Positively Powered');
-  lines.push('');
-  lines.push('Your result: ' + code + ' — ' + name);
-  lines.push(tagline);
-  lines.push('');
-  lines.push('========================================');
-  lines.push('MY REPORT');
-  lines.push('========================================');
-  lines.push('');
-  lines.push('YOUR STRENGTHS');
-  lines.push(plainList(P.str));
-  lines.push('');
-  lines.push('BLIND SPOTS TO BE MINDFUL OF');
-  lines.push(plainList(P.bs));
-  lines.push('');
-  lines.push('HOW YOU COMMUNICATE');
-  lines.push(plainList(P.cm));
-  lines.push('');
-  lines.push('YOUR FUTURE POTENTIAL');
-  lines.push(plainList(P.pt));
-  lines.push('');
-  lines.push('========================================');
-  lines.push('HOW I LEARN');
-  lines.push('========================================');
-  lines.push('');
-  lines.push('HOW YOU LEARN BEST');
-  lines.push(plainList(P.ln.slice(0, 3)));
-  lines.push('');
-  lines.push('HOW TO GET THE MOST FROM FEEDBACK');
-  lines.push('- ' + P.ln[3]);
-  lines.push('');
-  lines.push('TRAINING FORMATS THAT WORK BEST FOR YOU');
-  lines.push('- ' + P.ln[4]);
-  lines.push('');
-  lines.push('========================================');
-  lines.push('MANAGER GUIDE');
-  lines.push('========================================');
-  lines.push('');
-  lines.push('HOW TO LEAD ' + userName.toUpperCase() + ' AT THEIR BEST');
-  lines.push(plainList(P.ml));
-  lines.push('');
-  lines.push('HOW TO RECOGNISE THEM IN A WAY THAT LANDS');
-  lines.push(plainList(P.mr));
-  lines.push('');
-  lines.push('WHAT TO WATCH AND HOW TO MANAGE IT');
-  lines.push(plainList(P.mw));
-  lines.push('');
-  lines.push('THEIR FUTURE POTENTIAL — WHAT TO INVEST IN');
-  lines.push(plainList(P.mpt));
-  lines.push('');
-  lines.push('HOW TO DESIGN THEIR DEVELOPMENT');
-  lines.push(plainList(P.mln));
-  lines.push('');
-  lines.push('----------------------------------------');
-  lines.push('With clarity and conviction, Sophie.');
-  lines.push('Positively Powered');
-  lines.push('positivelypowered.net');
-
-  const subject = encodeURIComponent('Your Loss Leader Profile — ' + code + ' (' + name + ')');
-  const toAddr = encodeURIComponent(addr);
-
-  let url;
-  let providerLabel;
-
-  if (provider === 'gmail' || provider === 'outlook') {
-    // Web mail providers have strict URL length limits, so send a short
-    // summary with a prompt to view the full report on screen.
-    const shortLines = [];
-    shortLines.push('Your Loss Leader Profile result: ' + code + ' — ' + name);
-    shortLines.push(tagline);
-    shortLines.push('');
-    shortLines.push('TOP STRENGTH');
-    shortLines.push('- ' + P.str[0]);
-    shortLines.push('');
-    shortLines.push('KEY BLIND SPOT TO WATCH');
-    shortLines.push('- ' + P.bs[0]);
-    shortLines.push('');
-    shortLines.push('FUTURE POTENTIAL');
-    shortLines.push('- ' + P.pt[0]);
-    shortLines.push('');
-    shortLines.push('Your full report, including the complete strengths, blind spots, communication style, how you learn, and the manager guide, is available on screen at the Loss Leader Profile page. For the complete written copy, use the "Mail app" option instead, which includes the full report in the email body.');
-    shortLines.push('');
-    shortLines.push('With clarity and conviction, Sophie.');
-    shortLines.push('Positively Powered — positivelypowered.net');
-    const shortBody = encodeURIComponent(shortLines.join('\n'));
-
-    if (provider === 'gmail') {
-      url = 'https://mail.google.com/mail/?view=cm&fs=1&to=' + toAddr + '&su=' + subject + '&body=' + shortBody;
-      providerLabel = 'Gmail';
-    } else {
-      url = 'https://outlook.office.com/mail/deeplink/compose?to=' + toAddr + '&subject=' + subject + '&body=' + shortBody;
-      providerLabel = 'Outlook';
-    }
-    window.open(url, '_blank');
-  } else {
-    // Default mail app via mailto can comfortably carry the full report
-    const bodyText = encodeURIComponent(lines.join('\n'));
-    url = 'mailto:' + toAddr + '?subject=' + subject + '&body=' + bodyText;
-    providerLabel = 'your default mail app';
-    window.location.href = url;
-  }
-
-  note.textContent = 'Opening ' + providerLabel + ' now...';
-  note.className = 'email-note success';
+  btn.textContent = orig;
+  note.textContent = 'Downloaded.';
+  note.className = 'pdf-note success';
 }
 
 function resetAll() {
   answers = []; current = 0; userName = ''; lastTopProfile = '';
   document.getElementById('firstname').value = '';
-  document.getElementById('email-input').value = '';
-  document.getElementById('email-note').textContent = '';
-  document.getElementById('email-input').classList.remove('error');
   document.getElementById('screen-result').classList.remove('active');
   document.getElementById('screen-intro').classList.add('active');
-  document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
-  document.querySelectorAll('.tab-panel').forEach((p, i) => p.classList.toggle('active', i === 0));
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', i===0));
+  document.querySelectorAll('.tab-panel').forEach((p,i) => p.classList.toggle('active', i===0));
+  checkForSaved();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
+// Run on load
+checkForSaved();
+
+
 </script>
 </body>
 </html>
