@@ -989,6 +989,7 @@ function checkPassword() {
     document.getElementById('password-gate').classList.add('hidden');
     input.value = '';
     error.textContent = '';
+    checkForSaved();
   } else {
     input.classList.add('error');
     error.textContent = 'Incorrect access code. Please try again.';
@@ -1797,9 +1798,7 @@ function resetAll() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Run on load
-checkForSaved();
-
+// Run on load — checkForSaved fires after password gate is dismissed
 
 </script>
 </body>
