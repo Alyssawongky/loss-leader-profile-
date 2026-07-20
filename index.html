@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Loss Leader Profile — Positively Powered</title>
+<title>Loss Leadership DNA — Positively Powered</title>
 <meta name="description" content="A practical, connection-focused assessment for retail loss prevention leaders. Understand how you work, communicate, and lead under pressure.">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap');
@@ -836,7 +836,7 @@
 <div id="password-gate">
   <div class="gate-card">
     <div class="gate-brand">Positively Powered</div>
-    <div class="gate-title">Loss Leader Profile</div>
+    <div class="gate-title">Loss Leadership DNA</div>
     <div class="gate-sub">Enter your access code to begin.</div>
     <div class="gate-input-wrap">
       <input
@@ -861,7 +861,7 @@
 
 <section class="hero">
   <div class="hero-eyebrow">Loss Prevention Leadership</div>
-  <h1>Loss Leader Profile</h1>
+  <h1>Loss Leadership DNA</h1>
   <p class="hero-sub">A practical assessment that helps you understand how you work, communicate, and lead under pressure — and gives your manager the tools to support you better.</p>
   <div class="hero-tags">
     <span class="hero-tag">Strengths</span>
@@ -885,7 +885,7 @@
     </div>
     <div class="intro-card">
       <h2>This is not a personality test.</h2>
-      <p>The Loss Leader Profile is a connection-focused framework. It identifies how you make decisions, communicate, respond under pressure, and learn — then translates that into practical guidance you can use immediately.</p>
+      <p>The Loss Leadership DNA is a connection-focused framework. It identifies how you make decisions, communicate, respond under pressure, and learn — then translates that into practical guidance you can use immediately.</p>
       <p>Your result is a personalised report with two lenses: one for you, and one for your manager. No jargon. No labels. Just a clear picture of how you work best — and how the people around you can bring out more of it.</p>
       <div class="name-field">
         <label for="firstname">Your first name</label>
@@ -1220,8 +1220,8 @@ function switchTab(id, btn) {
 }
 
 // ── SAVE / LOAD ──
-const STORAGE_KEY = 'llp_saved_result';
-const PROGRESS_KEY = 'llp_progress';
+const STORAGE_KEY = 'lld_saved_result';
+const PROGRESS_KEY = 'lld_progress';
 
 function saveProgress() {
   try {
@@ -1380,149 +1380,378 @@ function downloadPDF(type) {
 
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ unit: 'pt', format: 'a4' });
-  const PW = doc.internal.pageSize.getWidth();
-  const PH = doc.internal.pageSize.getHeight();
-  const M = 56;
-  const CW = PW - M * 2;
+  const PW = doc.internal.pageSize.getWidth();  // 595
+  const PH = doc.internal.pageSize.getHeight(); // 842
 
-  const GD = [43,92,75], GM = [61,122,100], SG = [168,213,181];
-  const TD = [26,43,37], TG = [90,107,99], OW = [247,244,239];
+  // ── COLOURS ──
+  const GD  = [43, 92, 75];    // deep green
+  const GM  = [61, 122, 100];  // mid green
+  const SG  = [168, 213, 181]; // sage
+  const OW  = [247, 244, 239]; // off-white
+  const TD  = [26, 43, 37];    // text dark
+  const TG  = [90, 107, 99];   // text grey
+  const LG  = [232, 243, 236]; // light green tint
+  const AM  = [250, 238, 218]; // amber tint
+  const AMB = [186, 117, 23];  // amber border
+  const PU  = [238, 237, 254]; // purple tint
+  const PUB = [83, 74, 183];   // purple border
+  const TE  = [225, 245, 238]; // teal tint
+  const TEB = [29, 158, 117];  // teal border
+  const BG  = [248, 250, 249]; // page bg tint
 
-  let y = M;
-
-  function hf() {
-    doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(...GM);
-    doc.text('POSITIVELY POWERED', M, 32);
-    doc.setFont('helvetica','normal'); doc.setTextColor(...TG);
-    doc.text(type === 'me' ? 'Loss Leader Profile — My Report' : 'Loss Leader Profile — Manager Guide', PW-M, 32, {align:'right'});
-    doc.setDrawColor(212,224,216); doc.setLineWidth(0.75); doc.line(M,40,PW-M,40);
-    doc.setFontSize(8); doc.setTextColor(...TG);
-    doc.text('With clarity and conviction, Sophie.', M, PH-28);
-    doc.text('positivelypowered.net', PW-M, PH-28, {align:'right'});
-  }
-
-  function space(n=12) { ensureSpace(n); y += n; }
-
-  function ensureSpace(n) {
-    if (y + n > PH - 50) { doc.addPage(); hf(); y = M + 20; }
-  }
-
-  function secHead(text) {
-    ensureSpace(36); y += 14;
-    doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.setTextColor(...GM);
-    doc.text(text.toUpperCase(), M, y);
-    y += 4; doc.setDrawColor(...GM); doc.setLineWidth(1); doc.line(M, y, M+36, y);
-    y += 14;
-  }
-
-  function cardBlock(text, acc, fill) {
-    doc.setFont('helvetica','normal'); doc.setFontSize(10);
-    const lines = doc.splitTextToSize(text, CW-26);
-    const bh = lines.length * 13 + 16;
-    ensureSpace(bh+8);
-    doc.setFillColor(...fill); doc.rect(M, y, CW, bh, 'F');
-    doc.setFillColor(...acc); doc.rect(M, y, 3, bh, 'F');
-    doc.setTextColor(...TD); doc.text(lines, M+13, y+17);
-    y += bh+8;
-  }
-
-  function neutralBlock(text) {
-    doc.setFont('helvetica','normal'); doc.setFontSize(10);
-    const lines = doc.splitTextToSize(text, CW-26);
-    const bh = lines.length * 13 + 16;
-    ensureSpace(bh+8);
-    doc.setDrawColor(212,224,216); doc.setLineWidth(0.75); doc.rect(M, y, CW, bh);
-    doc.setTextColor(...TD); doc.text(lines, M+13, y+17);
-    y += bh+8;
-  }
-
-  const code = document.getElementById('res-code').textContent;
+  const code  = document.getElementById('res-code').textContent;
   const pName = document.getElementById('res-name').textContent;
-  const tagline = document.getElementById('res-tagline').textContent;
-  const P = PROFILES[lastTopProfile];
+  const tag   = document.getElementById('res-tagline').textContent;
+  const P     = PROFILES[lastTopProfile];
+  const uName = userName && userName !== 'You' ? userName : '';
 
-  // ── COVER ──
-  doc.setFillColor(...GD); doc.rect(0,0,PW,PH,'F');
-  doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(...SG);
-  doc.text('POSITIVELY POWERED', M, 90);
-  doc.setFontSize(28); doc.setTextColor(...OW);
-  doc.text('Loss Leader Profile', M, 130);
-  doc.setFontSize(15); doc.setTextColor(...SG);
-  doc.text(type === 'me' ? 'My Report' : 'Manager Guide', M, 158);
-  doc.setFontSize(40); doc.setTextColor(...SG);
-  doc.text(code, M, 240);
-  doc.setFont('helvetica','bold'); doc.setFontSize(18); doc.setTextColor(...OW);
-  doc.text(pName, M, 272);
-  doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(...SG);
-  const tl = doc.splitTextToSize(tagline, CW-40);
-  doc.text(tl, M, 296);
-  if (type === 'mgr') {
-    doc.setFontSize(10); doc.setTextColor(...SG);
-    doc.text('Written for the person who leads ' + userName + '.', M, 346);
+  // ── LAYOUT CONSTANTS ──
+  const ML = 36, MR = 36, MT = 0;
+  const CW = PW - ML - MR;           // content width 523
+  const COL = (CW - 14) / 2;         // column width ~254
+  const COL2X = ML + COL + 14;       // right column x
+
+  // ── HELPER: draw rounded rect ──
+  function rRect(x, y, w, h, r, fill) {
+    doc.setFillColor(...fill);
+    doc.roundedRect(x, y, w, h, r, r, 'F');
   }
-  if (userName && userName !== 'You') {
-    doc.setFontSize(10); doc.setTextColor(...SG);
-    doc.text((type === 'me' ? 'Prepared for ' : 'About ') + userName, M, PH-90);
+
+  // ── HELPER: bullet list inside a column box ──
+  function colSection(x, y, w, label, items, accentCol, fillCol, iconChar) {
+    const PAD = 10;
+    const lineH = 12.5;
+    // measure total height needed
+    let totalH = 28; // heading row
+    const wrapped = items.map(s => doc.splitTextToSize('• ' + s, w - PAD*2 - 8));
+    wrapped.forEach(lines => { totalH += lines.length * lineH + 4; });
+    totalH += PAD;
+
+    // box background
+    rRect(x, y, w, totalH, 4, fillCol);
+    // left accent bar
+    doc.setFillColor(...accentCol);
+    doc.roundedRect(x, y, 4, totalH, 2, 2, 'F');
+
+    // icon circle
+    doc.setFillColor(...accentCol);
+    doc.circle(x + 16, y + 14, 8, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(255, 255, 255);
+    doc.text(iconChar, x + 16, y + 17.5, { align: 'center' });
+
+    // section heading
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8.5);
+    doc.setTextColor(...TD);
+    doc.text(label.toUpperCase(), x + 28, y + 17);
+
+    // bullet items
+    let iy = y + 32;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(...TD);
+    wrapped.forEach(lines => {
+      // draw bullet dot
+      doc.setFillColor(...accentCol);
+      doc.circle(x + PAD + 3, iy - 2.5, 1.8, 'F');
+      // text without the '• ' prefix (we drew the dot manually)
+      const cleanLines = lines.map((l, li) => li === 0 ? l.replace(/^• /, '') : l);
+      doc.text(cleanLines, x + PAD + 8, iy);
+      iy += lines.length * lineH + 4;
+    });
+
+    return totalH;
   }
-  doc.setFontSize(9);
-  doc.text(new Date().toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'}), M, PH-70);
 
-  // ── CONTENT ──
-  doc.addPage(); hf(); y = M + 20;
+  // ── HELPER: full-width section ──
+  function fullSection(x, y, w, label, items, accentCol, fillCol, iconChar) {
+    const PAD = 10;
+    const lineH = 12;
+    let totalH = 28;
+    const wrapped = items.map(s => doc.splitTextToSize(s, w - PAD*2 - 8));
+    wrapped.forEach(lines => { totalH += lines.length * lineH + 3; });
+    totalH += PAD;
 
+    rRect(x, y, w, totalH, 4, fillCol);
+    doc.setFillColor(...accentCol);
+    doc.roundedRect(x, y, 4, totalH, 2, 2, 'F');
+
+    doc.setFillColor(...accentCol);
+    doc.circle(x + 16, y + 14, 8, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(255, 255, 255);
+    doc.text(iconChar, x + 16, y + 17.5, { align: 'center' });
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8.5);
+    doc.setTextColor(...TD);
+    doc.text(label.toUpperCase(), x + 28, y + 17);
+
+    let iy = y + 32;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(...TD);
+    wrapped.forEach(lines => {
+      doc.setFillColor(...accentCol);
+      doc.circle(x + PAD + 3, iy - 2.5, 1.8, 'F');
+      doc.text(lines, x + PAD + 8, iy);
+      iy += lines.length * lineH + 3;
+    });
+
+    return totalH;
+  }
+
+  // ── HELPER: dev experience tile ──
+  function devTile(x, y, w, label) {
+    rRect(x, y, w, 52, 4, LG);
+    doc.setFillColor(...GD);
+    doc.circle(x + w/2, y + 16, 10, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor(255,255,255);
+    doc.text('✦', x + w/2, y + 19.5, { align: 'center' });
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7);
+    doc.setTextColor(...TD);
+    const ll = doc.splitTextToSize(label, w - 6);
+    doc.text(ll, x + w/2, y + 36, { align: 'center' });
+  }
+
+  // ═══════════════════════════════════════════
+  // PAGE: INDIVIDUAL REPORT
+  // ═══════════════════════════════════════════
+  function buildMePage() {
+    // ── HEADER BAR ──
+    doc.setFillColor(...GD);
+    doc.rect(0, 0, PW, 100, 'F');
+
+    // Brand
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7.5);
+    doc.setTextColor(...SG);
+    doc.text('POSITIVELY POWERED', ML, 18);
+
+    // Profile code circle top-right
+    doc.setFillColor(255,255,255,0.15);
+    doc.circle(PW - MR - 22, 38, 22, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(...OW);
+    doc.text(code, PW - MR - 22, 42, { align: 'center' });
+
+    // Title
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(26);
+    doc.setTextColor(255, 255, 255);
+    doc.text('Loss Leadership DNA', ML, 45);
+
+    // Subtitle
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(10.5);
+    doc.setTextColor(...SG);
+    doc.text('Know Yourself. Lead Better.', ML, 62);
+
+    // Tagline
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.5);
+    doc.setTextColor(...SG);
+    const tagLines = doc.splitTextToSize(tag, PW - ML - MR - 60);
+    doc.text(tagLines, ML, 78);
+
+    // Prepared for row
+    doc.setFillColor(255,255,255,0.12);
+    doc.rect(0, 95, PW, 22, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.setTextColor(...SG);
+    if (uName) doc.text('PREPARED FOR ' + uName.toUpperCase(), ML, 110);
+    else doc.text('YOUR LEADERSHIP PROFILE', ML, 110);
+
+    // Right tag
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.text(pName.toUpperCase(), PW - MR, 110, { align: 'right' });
+
+    // ── TWO-COLUMN BODY ──
+    let ly = 125; // left col y
+    let ry = 125; // right col y
+    const GAP = 10;
+
+    // Left col: STRENGTHS
+    const h1 = colSection(ML, ly, COL, 'Your Leadership Strengths', P.str, GD, LG, '★');
+    ly += h1 + GAP;
+
+    // Right col: BLIND SPOTS
+    const h2 = colSection(COL2X, ry, COL, 'Your Blind Spots', P.bs, AMB, AM, '!');
+    ry += h2 + GAP;
+
+    // Left col: HOW YOU COMMUNICATE
+    const h3 = colSection(ML, ly, COL, 'How You Communicate', P.cm, GM, LG, '»');
+    ly += h3 + GAP;
+
+    // Right col: DEVELOPMENT OPPORTUNITIES
+    const h4 = colSection(COL2X, ry, COL, 'Your Development Opportunities', P.pt, PUB, PU, '↑');
+    ry += h4 + GAP;
+
+    // Left col: HOW YOU LEARN
+    const learnItems = [P.ln[0], P.ln[3], P.ln[4]];
+    const h5 = colSection(ML, ly, COL, 'How You Learn Best', learnItems, TEB, TE, '◎');
+    ly += h5 + GAP;
+
+    // ── RECOMMENDED DEV EXPERIENCES FOOTER ──
+    const footerY = Math.max(ly, ry) + 8;
+    const devExps = type === 'me' ? [
+      'Lead a cross-functional project',
+      'Mentor another leader',
+      'Present to Executives',
+      'Facilitate a workshop',
+      'Shadow another business function'
+    ] : [
+      'Executive leadership programme',
+      'Coach an emerging leader',
+      'Lead a business case',
+      'Cross-functional secondment',
+      'Facilitate a workshop'
+    ];
+
+    // check if footer fits
+    if (footerY + 80 < PH - 20) {
+      doc.setFillColor(...GD);
+      doc.rect(0, footerY, PW, 14, 'F');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(7.5);
+      doc.setTextColor(...SG);
+      doc.text('RECOMMENDED DEVELOPMENT EXPERIENCES', ML, footerY + 10);
+
+      const tileW = (CW - GAP * (devExps.length - 1)) / devExps.length;
+      devExps.forEach((label, i) => {
+        devTile(ML + i * (tileW + GAP), footerY + 16, tileW, label);
+      });
+
+      // Footer credit
+      const creditY = footerY + 74;
+      doc.setFont('helvetica', 'italic');
+      doc.setFontSize(7);
+      doc.setTextColor(...TG);
+      doc.text('With clarity and conviction, Sophie.  |  positivelypowered.net', PW/2, creditY, { align: 'center' });
+    }
+  }
+
+  // ═══════════════════════════════════════════
+  // PAGE: MANAGER GUIDE
+  // ═══════════════════════════════════════════
+  function buildMgrPage() {
+    // ── HEADER BAR ──
+    doc.setFillColor(...GD);
+    doc.rect(0, 0, PW, 100, 'F');
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7.5);
+    doc.setTextColor(...SG);
+    doc.text('POSITIVELY POWERED', ML, 18);
+
+    doc.setFillColor(255,255,255,0.15);
+    doc.circle(PW - MR - 22, 38, 22, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(...OW);
+    doc.text(code, PW - MR - 22, 42, { align: 'center' });
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(26);
+    doc.setTextColor(255, 255, 255);
+    doc.text('Loss Leadership DNA', ML, 45);
+
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(10.5);
+    doc.setTextColor(...SG);
+    doc.text("Manager's Guide", ML, 62);
+
+    const mgrSub = uName ? 'Helping ' + uName + ' perform at their best' : 'Helping your leader perform at their best';
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.5);
+    doc.setTextColor(...SG);
+    doc.text(mgrSub, ML, 78);
+
+    doc.setFillColor(255,255,255,0.12);
+    doc.rect(0, 95, PW, 22, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.setTextColor(...SG);
+    const prepFor = uName ? "PREPARED FOR " + uName.toUpperCase() + "'S LEADER" : "PREPARED FOR THEIR MANAGER";
+    doc.text(prepFor, ML, 110);
+    doc.setFont('helvetica', 'normal');
+    doc.text(pName.toUpperCase(), PW - MR, 110, { align: 'right' });
+
+    // ── TWO-COLUMN BODY ──
+    let ly = 125;
+    let ry = 125;
+    const GAP = 10;
+
+    // Left: HOW TO GET THE BEST
+    const h1 = colSection(ML, ly, COL, 'How to Get the Best from ' + (uName || 'Them'), P.ml, GD, LG, '★');
+    ly += h1 + GAP;
+
+    // Right: WATCH FOR
+    const h2 = colSection(COL2X, ry, COL, 'Watch For', P.mw, AMB, AM, '!');
+    ry += h2 + GAP;
+
+    // Left: COACHING OPPORTUNITIES
+    const h3 = colSection(ML, ly, COL, 'Coaching Opportunities', P.mpt, PUB, PU, '↑');
+    ly += h3 + GAP;
+
+    // Right: HOW TO COMMUNICATE
+    const h4 = colSection(COL2X, ry, COL, 'How to Communicate', P.mr, GM, LG, '»');
+    ry += h4 + GAP;
+
+    // Left: HOW TO DEVELOP THEM
+    const devItems = [P.mln[0], P.mln[1], P.mln[2]];
+    const h5 = colSection(ML, ly, COL, 'How to Develop Them', devItems, TEB, TE, '◎');
+    ly += h5 + GAP;
+
+    // ── DEV EXPERIENCES FOOTER ──
+    const footerY = Math.max(ly, ry) + 8;
+    const devExps = [
+      'Executive leadership programme',
+      'Present a business case to Exec Team',
+      'Mentor an emerging leader',
+      'Shadow an executive stakeholder',
+      'Facilitate a cross-functional workshop'
+    ];
+
+    if (footerY + 80 < PH - 20) {
+      doc.setFillColor(...GD);
+      doc.rect(0, footerY, PW, 14, 'F');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(7.5);
+      doc.setTextColor(...SG);
+      doc.text('RECOMMENDED DEVELOPMENT EXPERIENCES', ML, footerY + 10);
+
+      const tileW = (CW - GAP * (devExps.length - 1)) / devExps.length;
+      devExps.forEach((label, i) => {
+        devTile(ML + i * (tileW + GAP), footerY + 16, tileW, label);
+      });
+
+      doc.setFont('helvetica', 'italic');
+      doc.setFontSize(7);
+      doc.setTextColor(...TG);
+      doc.text('With clarity and conviction, Sophie.  |  positivelypowered.net', PW/2, footerY + 74, { align: 'center' });
+    }
+  }
+
+  // ── BUILD & SAVE ──
   if (type === 'me') {
-    doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.setTextColor(...GD);
-    doc.text('My Report', M, y); y += 24;
-    secHead('Your strengths');
-    P.str.forEach(s => cardBlock(s, GD, [232,243,236]));
-    secHead('Blind spots to be mindful of');
-    P.bs.forEach(s => cardBlock(s, [186,117,23], [250,238,218]));
-    secHead('How you communicate');
-    P.cm.forEach(s => neutralBlock(s));
-    secHead('Your future potential');
-    P.pt.forEach(s => cardBlock(s, [83,74,183], [238,237,254]));
-
-    doc.addPage(); hf(); y = M + 20;
-    doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.setTextColor(...GD);
-    doc.text('How I Learn', M, y); y += 24;
-    secHead('How you learn best');
-    P.ln.slice(0,3).forEach(s => cardBlock(s, [29,158,117], [225,245,238]));
-    secHead('How to get the most from feedback');
-    cardBlock(P.ln[3], [29,158,117], [225,245,238]);
-    secHead('Training formats that work best for you');
-    cardBlock(P.ln[4], [29,158,117], [225,245,238]);
-    secHead('Your development focus');
-    P.pt.forEach(s => cardBlock(s, [83,74,183], [238,237,254]));
-
+    buildMePage();
   } else {
-    doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.setTextColor(...GD);
-    doc.text('Manager Guide', M, y); y += 10;
-    doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(...TG);
-    const intro = doc.splitTextToSize('A practical guide for the person who leads ' + userName + '. Use this to understand how to bring out their best, invest in their development, and realise their full potential.', CW);
-    y += 14; doc.text(intro, M, y); y += intro.length * 14 + 10;
-    secHead('How to lead ' + userName + ' at their best');
-    P.ml.forEach(s => cardBlock(s, GD, [232,243,236]));
-    secHead('How to recognise them in a way that lands');
-    P.mr.forEach(s => neutralBlock(s));
-    secHead('What to watch and how to manage it');
-    P.mw.forEach(s => cardBlock(s, [186,117,23], [250,238,218]));
-    secHead('Their future potential — what to invest in');
-    P.mpt.forEach(s => cardBlock(s, [83,74,183], [238,237,254]));
-    secHead('How to design their development');
-    P.mln.forEach(s => cardBlock(s, [29,158,117], [225,245,238]));
-  }
-
-  // page numbers (skip cover)
-  const total = doc.internal.getNumberOfPages();
-  for (let i = 2; i <= total; i++) {
-    doc.setPage(i);
-    doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(...TG);
-    doc.text(String(i-1) + ' / ' + String(total-1), PW/2, PH-28, {align:'center'});
+    buildMgrPage();
   }
 
   const label = type === 'me' ? 'My-Report' : 'Manager-Guide';
-  const namePart = userName && userName !== 'You' ? '-' + userName.replace(/[^a-zA-Z0-9]/g,'') : '';
-  doc.save('Loss-Leader-Profile-' + label + '-' + code + namePart + '.pdf');
+  const namePart = uName ? '-' + uName.replace(/[^a-zA-Z0-9]/g, '') : '';
+  doc.save('Loss-Leadership-DNA-' + label + '-' + code + namePart + '.pdf');
 
   btn.disabled = false;
   btn.textContent = orig;
