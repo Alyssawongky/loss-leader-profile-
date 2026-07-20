@@ -1363,7 +1363,7 @@ function dismissBanner() {
 }
 
 // ── PDF GENERATION ──
-function downloadPDF(type) {
+async function downloadPDF(type) {
   const btnId = type === 'me' ? 'pdf-btn-me' : 'pdf-btn-mgr';
   const noteId = type === 'me' ? 'pdf-note-me' : 'pdf-note-mgr';
   const btn = document.getElementById(btnId);
@@ -1381,24 +1381,48 @@ function downloadPDF(type) {
 
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ unit: 'pt', format: 'a4' });
-  const PW = doc.internal.pageSize.getWidth();  // 595
-  const PH = doc.internal.pageSize.getHeight(); // 842
+  const PW = doc.internal.pageSize.getWidth();   // 595.28
+  const PH = doc.internal.pageSize.getHeight();  // 841.89
+
+  // ── LOAD FONTS ──
+  // Fetch Inter Regular + Bold from Google Fonts CDN and register with jsPDF
+  async function loadFont(url, name, style, weight) {
+    try {
+      const res = await fetch(url);
+      const buf = await res.arrayBuffer();
+      const b64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
+      doc.addFileToVFS(name + '.ttf', b64);
+      doc.addFont(name + '.ttf', name, style, weight);
+    } catch(e) { /* fall back to helvetica */ }
+  }
+
+  // Use Google Fonts API to get TTF files for Inter and Lora
+  try {
+    await Promise.all([
+      loadFont('https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2', 'Inter', 'normal', 400),
+      loadFont('https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuI6fAZ9hiJ-Ek-_EeA.woff2', 'Inter', 'bold', 700),
+      loadFont('https://fonts.gstatic.com/s/lora/v35/0QI6MX1D_JOxE7fSZN05U9ueCGkpnkMn5pqG.woff2', 'Lora', 'normal', 400),
+      loadFont('https://fonts.gstatic.com/s/lora/v35/0QI6MX1D_JOxE7fSZN05U9ueCGkpnkMn5pqG.woff2', 'Lora', 'bold', 700),
+    ]);
+  } catch(e) {}
+
+  const HF = 'Inter';   // body / heading fallback to Inter
+  const SF = 'Lora';    // serif font for display title
 
   // ── COLOURS ──
-  const GD  = [43, 92, 75];    // deep green
-  const GM  = [61, 122, 100];  // mid green
-  const SG  = [168, 213, 181]; // sage
-  const OW  = [247, 244, 239]; // off-white
-  const TD  = [26, 43, 37];    // text dark
-  const TG  = [90, 107, 99];   // text grey
-  const LG  = [232, 243, 236]; // light green tint
-  const AM  = [250, 238, 218]; // amber tint
-  const AMB = [186, 117, 23];  // amber border
-  const PU  = [238, 237, 254]; // purple tint
-  const PUB = [83, 74, 183];   // purple border
-  const TE  = [225, 245, 238]; // teal tint
-  const TEB = [29, 158, 117];  // teal border
-  const BG  = [248, 250, 249]; // page bg tint
+  const GD  = [43, 92, 75];
+  const GM  = [61, 122, 100];
+  const SG  = [168, 213, 181];
+  const OW  = [247, 244, 239];
+  const TD  = [26, 43, 37];
+  const TG  = [90, 107, 99];
+  const LG  = [232, 243, 236];
+  const AM  = [250, 238, 218];
+  const AMB = [186, 117, 23];
+  const PU  = [238, 237, 254];
+  const PUB = [83, 74, 183];
+  const TE  = [225, 245, 238];
+  const TEB = [29, 158, 117];
 
   const code  = document.getElementById('res-code').textContent;
   const pName = document.getElementById('res-name').textContent;
@@ -1407,373 +1431,311 @@ function downloadPDF(type) {
   const uName = userName && userName !== 'You' ? userName : '';
 
   // ── LAYOUT CONSTANTS ──
-  const ML = 36, MR = 36, MT = 0;
-  const CW = PW - ML - MR;           // content width 523
-  const COL = (CW - 14) / 2;         // column width ~254
-  const COL2X = ML + COL + 14;       // right column x
+  const ML   = 36;
+  const MR   = 36;
+  const CW   = PW - ML - MR;        // 523 pt
+  const GAP  = 12;
+  const COL  = (CW - GAP) / 2;      // ~255 pt each column
+  const COL2X = ML + COL + GAP;
 
-  // ── HELPER: draw section icon by type ──
-  function drawIcon(type, cx, cy, col) {
+  // Fixed vertical zones
+  const HDR_H   = 102;               // header bar height
+  const PREP_H  = 20;                // prepared-for strip height
+  const BODY_Y  = HDR_H + PREP_H + 8; // body starts here
+  const FOOT_H  = 80;                // footer tile area height (bar 14 + tiles 56 + credit 10)
+  const CREDIT_Y = PH - 10;          // signature pinned to bottom
+  const BODY_H  = PH - BODY_Y - FOOT_H - 8; // usable body height
+
+  // ── DRAW ICON ──
+  function drawIcon(itype, cx, cy, col) {
     doc.setFillColor(...col);
     doc.setDrawColor(...col);
-    doc.setLineWidth(1.2);
-    if (type === 'star') {
-      // Simple 4-point diamond star
-      const s = 5;
-      doc.triangle(cx, cy-s, cx-3, cy, cx, cy+s, 'F');
-      doc.triangle(cx, cy-s, cx+3, cy, cx, cy+s, 'F');
-    } else if (type === 'warn') {
-      // Exclamation mark: filled rect + dot
+    if (itype === 'star') {
+      doc.triangle(cx, cy-5, cx-3.5, cy+0.5, cx, cy+5, 'F');
+      doc.triangle(cx, cy-5, cx+3.5, cy+0.5, cx, cy+5, 'F');
+    } else if (itype === 'warn') {
       doc.roundedRect(cx-1.5, cy-5, 3, 5.5, 1, 1, 'F');
       doc.circle(cx, cy+3, 1.5, 'F');
-    } else if (type === 'arrow') {
-      // Up arrow
+    } else if (itype === 'arrow') {
       doc.triangle(cx, cy-5, cx-4, cy, cx+4, cy, 'F');
-      doc.roundedRect(cx-1.5, cy, 3, 4, 0.5, 0.5, 'F');
-    } else if (type === 'chat') {
-      // Speech bubble: rounded rect + small triangle nib
+      doc.roundedRect(cx-1.5, cy, 3, 4.5, 0.5, 0.5, 'F');
+    } else if (itype === 'chat') {
       doc.roundedRect(cx-5, cy-4.5, 10, 7, 1.5, 1.5, 'F');
       doc.triangle(cx-2, cy+2.5, cx+1, cy+2.5, cx-1, cy+5.5, 'F');
-    } else if (type === 'target') {
-      // Target / concentric circles
+    } else if (itype === 'target') {
+      doc.setLineWidth(1.5);
       doc.circle(cx, cy, 5.5, 'S');
       doc.circle(cx, cy, 3, 'S');
       doc.circle(cx, cy, 1, 'F');
-    } else if (type === 'person') {
-      // Simple person silhouette
+    } else if (itype === 'person') {
       doc.circle(cx, cy-4, 2.5, 'F');
       doc.ellipse(cx, cy+1.5, 3.5, 2.5, 'F');
-    } else if (type === 'book') {
-      // Open book: two rects with spine line
+    } else if (itype === 'book') {
       doc.roundedRect(cx-5.5, cy-4, 5, 8, 0.5, 0.5, 'F');
       doc.roundedRect(cx+0.5, cy-4, 5, 8, 0.5, 0.5, 'F');
-      doc.setLineWidth(0.8);
+      doc.setLineWidth(0.8); doc.setDrawColor(...col);
       doc.line(cx, cy-4, cx, cy+4);
-    } else if (type === 'lightning') {
-      // Lightning bolt
+    } else if (itype === 'lightning') {
       doc.triangle(cx+1, cy-5, cx-3, cy+1, cx+1, cy+1, 'F');
       doc.triangle(cx-1, cy-1, cx+3, cy+5, cx-1, cy+5, 'F');
       doc.triangle(cx-1, cy-1, cx+1, cy-1, cx-1, cy+1, 'F');
-    } else if (type === 'cog') {
-      // Simple gear: circle + tick marks around edge
+    } else if (itype === 'cog') {
       doc.circle(cx, cy, 4, 'F');
       doc.setFillColor(255,255,255);
       doc.circle(cx, cy, 2, 'F');
       doc.setFillColor(...col);
       for (let a = 0; a < 360; a += 45) {
         const rad = (a * Math.PI) / 180;
-        const x1 = cx + Math.cos(rad) * 4;
-        const y1 = cy + Math.sin(rad) * 4;
-        const x2 = cx + Math.cos(rad) * 6;
-        const y2 = cy + Math.sin(rad) * 6;
-        doc.setLineWidth(2.5);
-        doc.setDrawColor(...col);
-        doc.line(x1, y1, x2, y2);
+        doc.setLineWidth(2.5); doc.setDrawColor(...col);
+        doc.line(cx + Math.cos(rad)*4, cy + Math.sin(rad)*4,
+                 cx + Math.cos(rad)*6.5, cy + Math.sin(rad)*6.5);
       }
     } else {
-      // Fallback: filled circle
       doc.circle(cx, cy, 4, 'F');
     }
   }
 
-  // ── ICON MAP for section labels ──
-  function iconForKey(key) {
-    const map = {
-      'star': 'star', 'warn': 'warn', 'arrow': 'arrow',
-      'chat': 'chat', 'target': 'target', 'person': 'person',
-      'book': 'book', 'lightning': 'lightning', 'cog': 'cog'
-    };
-    return map[key] || 'star';
-  }
-
-  // ── HELPER: draw rounded rect ──
-  function rRect(x, y, w, h, r, fill) {
-    doc.setFillColor(...fill);
-    doc.roundedRect(x, y, w, h, r, r, 'F');
-  }
-
-  // ── HELPER: bullet list inside a column box ──
-  function colSection(x, y, w, label, items, accentCol, fillCol, iconKey) {
+  // ── MEASURE colSection height ──
+  function measureCol(items, w) {
     const PAD = 10;
-    const lineH = 12.5;
-    let totalH = 28;
-    const wrapped = items.map(s => doc.splitTextToSize(s, w - PAD*2 - 8));
-    wrapped.forEach(lines => { totalH += lines.length * lineH + 4; });
-    totalH += PAD;
+    const lineH = 12;
+    let h = 30; // heading row
+    items.forEach(s => {
+      const lines = doc.splitTextToSize(s, w - PAD*2 - 8);
+      h += lines.length * lineH + 5;
+    });
+    h += PAD;
+    return h;
+  }
 
-    rRect(x, y, w, totalH, 4, fillCol);
+  // ── DRAW colSection ──
+  function drawCol(x, y, w, h, label, items, accentCol, fillCol, iconKey) {
+    const PAD = 10;
+    const lineH = 12;
+    // Background
+    doc.setFillColor(...fillCol);
+    doc.roundedRect(x, y, w, h, 4, 4, 'F');
+    // Accent bar
     doc.setFillColor(...accentCol);
-    doc.roundedRect(x, y, 4, totalH, 2, 2, 'F');
-
-    // Icon circle background
+    doc.roundedRect(x, y, 4, h, 2, 2, 'F');
+    // Icon circle
     doc.setFillColor(...accentCol);
-    doc.circle(x + 16, y + 14, 8, 'F');
-    // Draw icon in white
-    drawIcon(iconKey, x + 16, y + 14, [255, 255, 255]);
-
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8.5);
-    doc.setTextColor(...TD);
-    doc.text(label.toUpperCase(), x + 28, y + 17);
-
-    let iy = y + 32;
-    doc.setFont('helvetica', 'normal');
+    doc.circle(x + 17, y + 15, 8.5, 'F');
+    drawIcon(iconKey, x + 17, y + 15, [255,255,255]);
+    // Heading
+    doc.setFont(HF, 'bold');
     doc.setFontSize(8);
     doc.setTextColor(...TD);
-    wrapped.forEach(lines => {
+    doc.text(label.toUpperCase(), x + 30, y + 18.5);
+    // Divider
+    doc.setDrawColor(255,255,255);
+    doc.setLineWidth(0.5);
+    doc.line(x+4, y+28, x+w, y+28);
+    // Bullets
+    let iy = y + 39;
+    doc.setFont(HF, 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(...TD);
+    items.forEach(s => {
+      const lines = doc.splitTextToSize(s, w - PAD*2 - 8);
+      // bullet dot
       doc.setFillColor(...accentCol);
       doc.circle(x + PAD + 3, iy - 2.5, 1.8, 'F');
       doc.text(lines, x + PAD + 8, iy);
-      iy += lines.length * lineH + 4;
+      iy += lines.length * lineH + 5;
     });
-
-    return totalH;
   }
 
-  // ── HELPER: dev experience tile ──
+  // ── STRETCH two columns to same height, fill BODY_H ──
+  function drawColPair(lx, lItems, lLabel, lAcc, lFill, lIcon,
+                        rx, rItems, rLabel, rAcc, rFill, rIcon,
+                        y, availH) {
+    const lNat = measureCol(lItems, COL);
+    const rNat = measureCol(rItems, COL);
+    const h = Math.max(lNat, rNat, availH);
+    drawCol(lx, y, COL, h, lLabel, lItems, lAcc, lFill, lIcon);
+    drawCol(rx, y, COL, h, rLabel, rItems, rAcc, rFill, rIcon);
+    return h;
+  }
+
+  // ── DEV TILE ──
   function devTile(x, y, w, label, iconKey) {
-    rRect(x, y, w, 56, 4, LG);
-    // Icon circle
+    doc.setFillColor(...LG);
+    doc.roundedRect(x, y, w, 56, 4, 4, 'F');
     doc.setFillColor(...GD);
-    doc.circle(x + w/2, y + 16, 10, 'F');
-    drawIcon(iconKey || 'star', x + w/2, y + 16, [255, 255, 255]);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(7);
+    doc.circle(x + w/2, y + 17, 10, 'F');
+    drawIcon(iconKey || 'star', x + w/2, y + 17, [255,255,255]);
+    doc.setFont(HF, 'normal');
+    doc.setFontSize(6.5);
     doc.setTextColor(...TD);
-    const ll = doc.splitTextToSize(label, w - 6);
-    doc.text(ll, x + w/2, y + 34, { align: 'center' });
+    const ll = doc.splitTextToSize(label, w - 8);
+    doc.text(ll, x + w/2, y + 36, { align: 'center' });
   }
 
-  // ═══════════════════════════════════════════
-  // PAGE: INDIVIDUAL REPORT
-  // ═══════════════════════════════════════════
-  function buildMePage() {
-    // ── HEADER BAR ──
+  // ── PAGE HEADER ──
+  function drawHeader(subtitle, prepLine) {
+    // Full-bleed green header
     doc.setFillColor(...GD);
-    doc.rect(0, 0, PW, 100, 'F');
+    doc.rect(0, 0, PW, HDR_H, 'F');
 
     // Brand
-    doc.setFont('helvetica', 'bold');
+    doc.setFont(HF, 'bold');
+    doc.setFontSize(7);
+    doc.setTextColor(...SG);
+    doc.text('POSITIVELY POWERED', ML, 16);
+
+    // Profile code circle — top right
+    doc.setFillColor(61, 100, 82);
+    doc.circle(PW - MR - 22, HDR_H/2 - 8, 20, 'F');
+    doc.setFont(HF, 'bold');
+    doc.setFontSize(8.5);
+    doc.setTextColor(...OW);
+    doc.text(code, PW - MR - 22, HDR_H/2 - 4, { align: 'center' });
+
+    // Main title — Lora
+    doc.setFont(SF, 'bold');
+    doc.setFontSize(24);
+    doc.setTextColor(255, 255, 255);
+    doc.text('Loss Leadership DNA', ML, 42);
+
+    // Subtitle italic
+    doc.setFont(SF, 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(...SG);
+    doc.text(subtitle, ML, 58);
+
+    // Tag line
+    doc.setFont(HF, 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(...SG);
+    const tagW = PW - ML - MR - 56;
+    const tagLines = doc.splitTextToSize(tag, tagW);
+    doc.text(tagLines, ML, 74);
+
+    // Prepared-for strip
+    doc.setFillColor(35, 72, 58);
+    doc.rect(0, HDR_H, PW, PREP_H, 'F');
+    doc.setFont(HF, 'bold');
     doc.setFontSize(7.5);
     doc.setTextColor(...SG);
-    doc.text('POSITIVELY POWERED', ML, 18);
-
-    // Profile code circle top-right
-    doc.setFillColor(255,255,255,0.15);
-    doc.circle(PW - MR - 22, 38, 22, 'F');
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9);
-    doc.setTextColor(...OW);
-    doc.text(code, PW - MR - 22, 42, { align: 'center' });
-
-    // Title
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(26);
-    doc.setTextColor(255, 255, 255);
-    doc.text('Loss Leadership DNA', ML, 45);
-
-    // Subtitle
-    doc.setFont('helvetica', 'italic');
-    doc.setFontSize(10.5);
-    doc.setTextColor(...SG);
-    doc.text('Know Yourself. Lead Better.', ML, 62);
-
-    // Tagline
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8.5);
-    doc.setTextColor(...SG);
-    const tagLines = doc.splitTextToSize(tag, PW - ML - MR - 60);
-    doc.text(tagLines, ML, 78);
-
-    // Prepared for row
-    doc.setFillColor(255,255,255,0.12);
-    doc.rect(0, 95, PW, 22, 'F');
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8);
-    doc.setTextColor(...SG);
-    if (uName) doc.text('PREPARED FOR ' + uName.toUpperCase(), ML, 110);
-    else doc.text('YOUR LEADERSHIP PROFILE', ML, 110);
-
-    // Right tag
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.text(pName.toUpperCase(), PW - MR, 110, { align: 'right' });
-
-    // ── TWO-COLUMN BODY ──
-    let ly = 125; // left col y
-    let ry = 125; // right col y
-    const GAP = 10;
-
-    // Left col: STRENGTHS
-    const h1 = colSection(ML, ly, COL, 'Your Leadership Strengths', P.str, GD, LG, 'star');
-    ly += h1 + GAP;
-
-    // Right col: BLIND SPOTS
-    const h2 = colSection(COL2X, ry, COL, 'Your Blind Spots', P.bs, AMB, AM, 'warn');
-    ry += h2 + GAP;
-
-    // Left col: HOW YOU COMMUNICATE
-    const h3 = colSection(ML, ly, COL, 'How You Communicate', P.cm, GM, LG, 'chat');
-    ly += h3 + GAP;
-
-    // Right col: DEVELOPMENT OPPORTUNITIES
-    const h4 = colSection(COL2X, ry, COL, 'Your Development Opportunities', P.pt, PUB, PU, 'arrow');
-    ry += h4 + GAP;
-
-    // Left col: HOW YOU LEARN
-    const learnItems = [P.ln[0], P.ln[3], P.ln[4]];
-    const h5 = colSection(ML, ly, COL, 'How You Learn Best', learnItems, TEB, TE, 'book');
-    ly += h5 + GAP;
-
-    // ── RECOMMENDED DEV EXPERIENCES FOOTER ──
-    const footerY = Math.max(ly, ry) + 8;
-    const devExps = type === 'me' ? [
-      'Lead a cross-functional project',
-      'Mentor another leader',
-      'Present to Executives',
-      'Facilitate a workshop',
-      'Shadow another business function'
-    ] : [
-      'Executive leadership programme',
-      'Coach an emerging leader',
-      'Lead a business case',
-      'Cross-functional secondment',
-      'Facilitate a workshop'
-    ];
-
-    // check if footer fits
-    if (footerY + 80 < PH - 20) {
-      doc.setFillColor(...GD);
-      doc.rect(0, footerY, PW, 14, 'F');
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(7.5);
-      doc.setTextColor(...SG);
-      doc.text('RECOMMENDED DEVELOPMENT EXPERIENCES', ML, footerY + 10);
-
-      const tileW = (CW - GAP * (devExps.length - 1)) / devExps.length;
-      const meIcons = ['lightning', 'person', 'chat', 'target', 'book'];
-      devExps.forEach((label, i) => {
-        devTile(ML + i * (tileW + GAP), footerY + 16, tileW, label, meIcons[i % meIcons.length]);
-      });
-
-      // Footer credit
-      const creditY = footerY + 74;
-      doc.setFont('helvetica', 'italic');
-      doc.setFontSize(7);
-      doc.setTextColor(...TG);
-      doc.text('With clarity and conviction, Sophie.  |  positivelypowered.net', PW/2, creditY, { align: 'center' });
-    }
+    doc.text(prepLine, ML, HDR_H + 13.5);
+    doc.setFont(HF, 'normal');
+    doc.text(pName.toUpperCase(), PW - MR, HDR_H + 13.5, { align: 'right' });
   }
 
-  // ═══════════════════════════════════════════
-  // PAGE: MANAGER GUIDE
-  // ═══════════════════════════════════════════
-  function buildMgrPage() {
-    // ── HEADER BAR ──
+  // ── PAGE FOOTER ──
+  function drawFooter(devExps, icons) {
+    const footY = PH - FOOT_H - 2;
     doc.setFillColor(...GD);
-    doc.rect(0, 0, PW, 100, 'F');
-
-    doc.setFont('helvetica', 'bold');
+    doc.rect(0, footY, PW, 16, 'F');
+    doc.setFont(HF, 'bold');
     doc.setFontSize(7.5);
     doc.setTextColor(...SG);
-    doc.text('POSITIVELY POWERED', ML, 18);
+    doc.text('RECOMMENDED DEVELOPMENT EXPERIENCES', ML, footY + 11);
 
-    doc.setFillColor(255,255,255,0.15);
-    doc.circle(PW - MR - 22, 38, 22, 'F');
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9);
-    doc.setTextColor(...OW);
-    doc.text(code, PW - MR - 22, 42, { align: 'center' });
+    const n = devExps.length;
+    const tileW = (CW - GAP * (n - 1)) / n;
+    devExps.forEach((label, i) => {
+      devTile(ML + i * (tileW + GAP), footY + 18, tileW, label, icons[i % icons.length]);
+    });
 
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(26);
-    doc.setTextColor(255, 255, 255);
-    doc.text('Loss Leadership DNA', ML, 45);
+    // Signature — pinned to very bottom
+    doc.setFont(HF, 'normal');
+    doc.setFontSize(7);
+    doc.setTextColor(...TG);
+    doc.text('With clarity and conviction, Sophie.  |  positivelypowered.net',
+             PW / 2, CREDIT_Y, { align: 'center' });
+  }
 
-    doc.setFont('helvetica', 'italic');
-    doc.setFontSize(10.5);
-    doc.setTextColor(...SG);
-    doc.text("Manager's Guide", ML, 62);
+  // ── BODY: two-column layout filling BODY_H ──
+  // Divide BODY_H evenly across 3 row pairs (or 2 + 1 full-width)
+  function drawBody(rows) {
+    // rows: array of {lLabel, lItems, lAcc, lFill, lIcon, rLabel, rItems, rAcc, rFill, rIcon}
+    // We have 2 or 3 rows; spread them evenly across BODY_H
+    const n = rows.length;
+    const rowGap = 8;
+    const totalGap = rowGap * (n - 1);
+    const rowH = Math.floor((BODY_H - totalGap) / n);
 
+    rows.forEach((row, i) => {
+      const y = BODY_Y + i * (rowH + rowGap);
+      drawCol(ML,    y, COL, rowH, row.lLabel, row.lItems, row.lAcc, row.lFill, row.lIcon);
+      drawCol(COL2X, y, COL, rowH, row.rLabel, row.rItems, row.rAcc, row.rFill, row.rIcon);
+    });
+  }
+
+  // ═══════════════════════════════════════
+  // INDIVIDUAL REPORT
+  // ═══════════════════════════════════════
+  function buildMePage() {
+    const prepLine = uName ? 'PREPARED FOR ' + uName.toUpperCase() : 'YOUR LEADERSHIP PROFILE';
+    drawHeader('Know Yourself. Lead Better.', prepLine);
+
+    drawBody([
+      {
+        lLabel: 'Your Leadership Strengths', lItems: P.str,
+        lAcc: GD, lFill: LG, lIcon: 'star',
+        rLabel: 'Your Blind Spots', rItems: P.bs,
+        rAcc: AMB, rFill: AM, rIcon: 'warn'
+      },
+      {
+        lLabel: 'How You Communicate', lItems: P.cm,
+        lAcc: GM, lFill: LG, lIcon: 'chat',
+        rLabel: 'Your Development Opportunities', rItems: P.pt,
+        rAcc: PUB, rFill: PU, rIcon: 'arrow'
+      },
+      {
+        lLabel: 'How You Learn Best', lItems: [P.ln[0], P.ln[3], P.ln[4]],
+        lAcc: TEB, lFill: TE, lIcon: 'book',
+        rLabel: 'Your Potential', rItems: [P.pt[0], P.pt[2]],
+        rAcc: PUB, rFill: PU, rIcon: 'target'
+      }
+    ]);
+
+    drawFooter(
+      ['Lead a cross-functional project','Mentor another leader','Present to Executives','Facilitate a workshop','Shadow a business function'],
+      ['lightning','person','chat','target','book']
+    );
+  }
+
+  // ═══════════════════════════════════════
+  // MANAGER GUIDE
+  // ═══════════════════════════════════════
+  function buildMgrPage() {
+    const prepLine = uName ? "PREPARED FOR " + uName.toUpperCase() + "'S LEADER" : "PREPARED FOR THEIR MANAGER";
     const mgrSub = uName ? 'Helping ' + uName + ' perform at their best' : 'Helping your leader perform at their best';
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8.5);
-    doc.setTextColor(...SG);
-    doc.text(mgrSub, ML, 78);
+    drawHeader(mgrSub, prepLine);
 
-    doc.setFillColor(255,255,255,0.12);
-    doc.rect(0, 95, PW, 22, 'F');
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8);
-    doc.setTextColor(...SG);
-    const prepFor = uName ? "PREPARED FOR " + uName.toUpperCase() + "'S LEADER" : "PREPARED FOR THEIR MANAGER";
-    doc.text(prepFor, ML, 110);
-    doc.setFont('helvetica', 'normal');
-    doc.text(pName.toUpperCase(), PW - MR, 110, { align: 'right' });
+    drawBody([
+      {
+        lLabel: 'How to Get the Best from ' + (uName || 'Them'), lItems: P.ml,
+        lAcc: GD, lFill: LG, lIcon: 'star',
+        rLabel: 'Watch For', rItems: P.mw,
+        rAcc: AMB, rFill: AM, rIcon: 'warn'
+      },
+      {
+        lLabel: 'Coaching Opportunities', lItems: P.mpt,
+        lAcc: PUB, lFill: PU, lIcon: 'arrow',
+        rLabel: 'How to Communicate', rItems: P.mr,
+        rAcc: GM, rFill: LG, rIcon: 'chat'
+      },
+      {
+        lLabel: 'How to Develop Them', lItems: [P.mln[0], P.mln[1], P.mln[2]],
+        lAcc: TEB, lFill: TE, lIcon: 'cog',
+        rLabel: 'Recognition — What Lands', rItems: P.mr,
+        rAcc: GM, rFill: LG, rIcon: 'person'
+      }
+    ]);
 
-    // ── TWO-COLUMN BODY ──
-    let ly = 125;
-    let ry = 125;
-    const GAP = 10;
-
-    // Left: HOW TO GET THE BEST
-    const h1 = colSection(ML, ly, COL, 'How to Get the Best from ' + (uName || 'Them'), P.ml, GD, LG, 'star');
-    ly += h1 + GAP;
-
-    // Right: WATCH FOR
-    const h2 = colSection(COL2X, ry, COL, 'Watch For', P.mw, AMB, AM, 'warn');
-    ry += h2 + GAP;
-
-    // Left: COACHING OPPORTUNITIES
-    const h3 = colSection(ML, ly, COL, 'Coaching Opportunities', P.mpt, PUB, PU, 'arrow');
-    ly += h3 + GAP;
-
-    // Right: HOW TO COMMUNICATE
-    const h4 = colSection(COL2X, ry, COL, 'How to Communicate', P.mr, GM, LG, 'chat');
-    ry += h4 + GAP;
-
-    // Left: HOW TO DEVELOP THEM
-    const devItems = [P.mln[0], P.mln[1], P.mln[2]];
-    const h5 = colSection(ML, ly, COL, 'How to Develop Them', devItems, TEB, TE, 'cog');
-    ly += h5 + GAP;
-
-    // ── DEV EXPERIENCES FOOTER ──
-    const footerY = Math.max(ly, ry) + 8;
-    const devExps = [
-      'Executive leadership programme',
-      'Present a business case to Exec Team',
-      'Mentor an emerging leader',
-      'Shadow an executive stakeholder',
-      'Facilitate a cross-functional workshop'
-    ];
-
-    if (footerY + 80 < PH - 20) {
-      doc.setFillColor(...GD);
-      doc.rect(0, footerY, PW, 14, 'F');
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(7.5);
-      doc.setTextColor(...SG);
-      doc.text('RECOMMENDED DEVELOPMENT EXPERIENCES', ML, footerY + 10);
-
-      const tileW = (CW - GAP * (devExps.length - 1)) / devExps.length;
-      const mgrIcons = ['lightning', 'person', 'target', 'arrow', 'cog'];
-      devExps.forEach((label, i) => {
-        devTile(ML + i * (tileW + GAP), footerY + 16, tileW, label, mgrIcons[i % mgrIcons.length]);
-      });
-
-      doc.setFont('helvetica', 'italic');
-      doc.setFontSize(7);
-      doc.setTextColor(...TG);
-      doc.text('With clarity and conviction, Sophie.  |  positivelypowered.net', PW/2, footerY + 74, { align: 'center' });
-    }
+    drawFooter(
+      ['Executive leadership programme','Present a business case','Mentor an emerging leader','Shadow an executive','Facilitate a workshop'],
+      ['lightning','person','target','arrow','cog']
+    );
   }
 
   // ── BUILD & SAVE ──
-  if (type === 'me') {
-    buildMePage();
-  } else {
-    buildMgrPage();
-  }
+  if (type === 'me') buildMePage();
+  else buildMgrPage();
 
   const label = type === 'me' ? 'My-Report' : 'Manager-Guide';
   const namePart = uName ? '-' + uName.replace(/[^a-zA-Z0-9]/g, '') : '';
