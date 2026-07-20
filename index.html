@@ -1053,7 +1053,7 @@ const PROFILES = {
     mln: ["This person learns by doing. The most effective development investment is real-world stretch, not classroom time. Put them in situations that require the capability before they have fully developed it — that is where their growth happens fastest.", "Deliver feedback directly and immediately. They will not process a softened or delayed message as well as a direct, specific one delivered in the moment.", "If formal training is required, choose experiential, scenario-based, or simulation-driven formats. Passive content delivery will not hold their attention or produce lasting change.", "Do not over-invest in pre-work or pre-reading for this profile. They will engage more deeply in the session if the structure allows them to act, decide, and debrief."]
   },
   I: {
-    name: "The Analyst", tag: "Evidence-based, precise, and thorough. You find what others miss and back every decision with the depth of knowledge to defend it.",
+    name: "The Analyst", tag: "Evidence-based, precise, and thorough. You find what others miss.",
     str: ["You bring rigour to decisions that others would make on instinct. In environments where the cost of error is high, this is an extraordinary asset.", "You prepare thoroughly and it shows — your analysis is typically the most complete in the room.", "You ask the question no one else thought to ask. Your pattern recognition is strong and your judgment, once formed, is sound.", "You are a steadying influence under pressure. Where others react, you assess."],
     bs: ["You can wait for more information than the situation requires. The threshold between enough to decide and comfortable to decide is a gap worth closing.", "Your communication can front-load context when the audience needs the conclusion first. This creates friction with more action-oriented stakeholders.", "You can be slow to commit in group settings, which can read as hesitation — even when you have already formed a clear view.", "When you do not respect the quality of someone's thinking, it can show. Managing this is worth the effort."],
     cm: ["Lead with your recommendation, then your reasoning. Most audiences engage better in that order — even when the analysis is what makes the recommendation credible.", "In real-time conversations, name your thinking process: 'I want to check one thing before I answer.' It signals rigour rather than uncertainty.", "Written communication is your strongest channel. Invest in it. A well-structured brief from you will do more work than a longer verbal explanation.", "For instinct-driven stakeholders, translate your analysis into a single clear recommendation. Give them the landing point — they can ask for the evidence if they want it."],
@@ -1571,7 +1571,7 @@ function buildPDF(type) {
   }
 
   // ── PAGE HEADER ──
-  function drawHeader(subtitle, prepLine) {
+  function drawHeader(subtitle, prepLine, thirdLine) {
     // Full-bleed green header
     doc.setFillColor(...GD);
     doc.rect(0, 0, PW, HDR_H, 'F');
@@ -1586,29 +1586,30 @@ function buildPDF(type) {
     doc.setFillColor(61, 100, 82);
     doc.circle(PW - MR - 22, HDR_H/2 - 8, 20, 'F');
     doc.setFont(HF, 'bold');
-    doc.setFontSize(8.5);
+    doc.setFontSize(13);
     doc.setTextColor(...OW);
-    doc.text(code, PW - MR - 22, HDR_H/2 - 4, { align: 'center' });
+    doc.text(code, PW - MR - 22, HDR_H/2 - 2, { align: 'center' });
 
-    // Main title — Lora
+    // Main title — serif
     doc.setFont(SF, 'bold');
     doc.setFontSize(24);
     doc.setTextColor(255, 255, 255);
     doc.text('Loss Leadership DNA', ML, 42);
 
-    // Subtitle italic
+    // Subtitle italic (e.g. "Know Yourself. Lead Better." or "Manager's Guide")
     doc.setFont(SF, 'normal');
-    doc.setFontSize(10);
+    doc.setFontSize(13);
     doc.setTextColor(...SG);
-    doc.text(subtitle, ML, 58);
+    doc.text(subtitle, ML, 60);
 
-    // Tag line
+    // Third line — small descriptive text (tag or "Helping X perform at their best")
     doc.setFont(HF, 'normal');
     doc.setFontSize(8);
     doc.setTextColor(...SG);
     const tagW = PW - ML - MR - 56;
-    const tagLines = doc.splitTextToSize(tag, tagW);
-    doc.text(tagLines, ML, 74);
+    const thirdText = thirdLine || tag;
+    const thirdLines = doc.splitTextToSize(thirdText, tagW);
+    doc.text(thirdLines, ML, 74);
 
     // Prepared-for strip
     doc.setFillColor(35, 72, 58);
@@ -1676,7 +1677,7 @@ function buildPDF(type) {
   // ═══════════════════════════════════════
   function buildMePage() {
     const prepLine = uName ? 'PREPARED FOR ' + uName.toUpperCase() : 'YOUR LEADERSHIP PROFILE';
-    drawHeader('Know Yourself. Lead Better.', prepLine);
+    drawHeader('Know Yourself. Lead Better.', prepLine, pName);
 
     drawBody([
       {
@@ -1711,7 +1712,7 @@ function buildPDF(type) {
   function buildMgrPage() {
     const prepLine = uName ? "PREPARED FOR " + uName.toUpperCase() + "'S LEADER" : "PREPARED FOR THEIR MANAGER";
     const mgrSub = uName ? 'Helping ' + uName + ' perform at their best' : 'Helping your leader perform at their best';
-    drawHeader(mgrSub, prepLine);
+    drawHeader("Manager's Guide", prepLine, mgrSub);
 
     drawBody([
       {
