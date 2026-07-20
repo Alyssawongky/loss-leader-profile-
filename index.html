@@ -1572,54 +1572,57 @@ function buildPDF(type) {
 
   // ── PAGE HEADER ──
   function drawHeader(subtitle, prepLine, thirdLine) {
-    // Full-bleed green header
+    // Full-bleed green header — tighter, text-dense
     doc.setFillColor(...GD);
     doc.rect(0, 0, PW, HDR_H, 'F');
 
-    // Brand
+    // Brand — top left
     doc.setFont(HF, 'bold');
-    doc.setFontSize(7);
+    doc.setFontSize(8.5);
     doc.setTextColor(...SG);
-    doc.text('POSITIVELY POWERED', ML, 16);
+    doc.text('POSITIVELY POWERED', ML, 17);
 
-    // Profile code circle — top right
-    doc.setFillColor(61, 100, 82);
-    doc.circle(PW - MR - 22, HDR_H/2 - 8, 20, 'F');
+    // Profile code circle — centred vertically in header, right side
+    const circR = 24;
+    const circX = PW - MR - circR;
+    const circY = HDR_H / 2 - 4;
+    doc.setFillColor(35, 72, 58);
+    doc.circle(circX, circY, circR, 'F');
     doc.setFont(HF, 'bold');
-    doc.setFontSize(13);
+    doc.setFontSize(15);
     doc.setTextColor(...OW);
-    doc.text(code, PW - MR - 22, HDR_H/2 - 2, { align: 'center' });
+    doc.text(code, circX, circY + 5, { align: 'center' });
 
-    // Main title — serif
+    // Main title
     doc.setFont(SF, 'bold');
-    doc.setFontSize(24);
+    doc.setFontSize(30);
     doc.setTextColor(255, 255, 255);
-    doc.text('Loss Leadership DNA', ML, 42);
+    doc.text('Loss Leadership DNA', ML, 48);
 
-    // Subtitle italic (e.g. "Know Yourself. Lead Better." or "Manager's Guide")
+    // Subtitle italic
     doc.setFont(SF, 'normal');
-    doc.setFontSize(13);
+    doc.setFontSize(15);
     doc.setTextColor(...SG);
-    doc.text(subtitle, ML, 60);
+    doc.text(subtitle, ML, 68);
 
-    // Third line — small descriptive text (tag or "Helping X perform at their best")
+    // Third line
     doc.setFont(HF, 'normal');
-    doc.setFontSize(8);
+    doc.setFontSize(9.5);
     doc.setTextColor(...SG);
-    const tagW = PW - ML - MR - 56;
+    const tagW = PW - ML - MR - circR * 2 - 20;
     const thirdText = thirdLine || tag;
     const thirdLines = doc.splitTextToSize(thirdText, tagW);
-    doc.text(thirdLines, ML, 74);
+    doc.text(thirdLines, ML, 84);
 
     // Prepared-for strip
     doc.setFillColor(35, 72, 58);
     doc.rect(0, HDR_H, PW, PREP_H, 'F');
     doc.setFont(HF, 'bold');
-    doc.setFontSize(7.5);
+    doc.setFontSize(8.5);
     doc.setTextColor(...SG);
-    doc.text(prepLine, ML, HDR_H + 13.5);
+    doc.text(prepLine, ML, HDR_H + 14);
     doc.setFont(HF, 'normal');
-    doc.text(pName.toUpperCase(), PW - MR, HDR_H + 13.5, { align: 'right' });
+    doc.text(pName.toUpperCase(), PW - MR, HDR_H + 14, { align: 'right' });
   }
 
   // ── PAGE FOOTER ──
