@@ -1363,7 +1363,7 @@ function dismissBanner() {
 }
 
 // ── PDF GENERATION ──
-async function downloadPDF(type) {
+function downloadPDF(type) {
   const btnId = type === 'me' ? 'pdf-btn-me' : 'pdf-btn-mgr';
   const noteId = type === 'me' ? 'pdf-note-me' : 'pdf-note-mgr';
   const btn = document.getElementById(btnId);
@@ -1379,35 +1379,32 @@ async function downloadPDF(type) {
   const orig = btn.textContent;
   btn.textContent = 'Building PDF...';
 
+  // Use setTimeout so the button state updates before the synchronous PDF build runs
+  setTimeout(() => {
+    try {
+      buildPDF(type);
+      note.textContent = 'Downloaded.';
+      note.className = 'pdf-note success';
+    } catch(e) {
+      note.textContent = 'Something went wrong — please try again.';
+      note.className = 'pdf-note error';
+    }
+    btn.disabled = false;
+    btn.textContent = orig;
+  }, 50);
+}
+
+function buildPDF(type) {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ unit: 'pt', format: 'a4' });
   const PW = doc.internal.pageSize.getWidth();   // 595.28
   const PH = doc.internal.pageSize.getHeight();  // 841.89
 
-  // ── LOAD FONTS ──
-  // Fetch Inter Regular + Bold from Google Fonts CDN and register with jsPDF
-  async function loadFont(url, name, style, weight) {
-    try {
-      const res = await fetch(url);
-      const buf = await res.arrayBuffer();
-      const b64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
-      doc.addFileToVFS(name + '.ttf', b64);
-      doc.addFont(name + '.ttf', name, style, weight);
-    } catch(e) { /* fall back to helvetica */ }
-  }
-
-  // Use Google Fonts API to get TTF files for Inter and Lora
-  try {
-    await Promise.all([
-      loadFont('https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2', 'Inter', 'normal', 400),
-      loadFont('https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuI6fAZ9hiJ-Ek-_EeA.woff2', 'Inter', 'bold', 700),
-      loadFont('https://fonts.gstatic.com/s/lora/v35/0QI6MX1D_JOxE7fSZN05U9ueCGkpnkMn5pqG.woff2', 'Lora', 'normal', 400),
-      loadFont('https://fonts.gstatic.com/s/lora/v35/0QI6MX1D_JOxE7fSZN05U9ueCGkpnkMn5pqG.woff2', 'Lora', 'bold', 700),
-    ]);
-  } catch(e) {}
-
-  const HF = 'Inter';   // body / heading fallback to Inter
-  const SF = 'Lora';    // serif font for display title
+  // ── FONTS: built-in only, no network requests ──
+  // helvetica = Inter equivalent (clean sans-serif)
+  // times     = Lora equivalent (elegant serif)
+  const HF = 'helvetica';
+  const SF = 'times';
 
   // ── COLOURS ──
   const GD  = [43, 92, 75];
@@ -1740,11 +1737,6 @@ async function downloadPDF(type) {
   const label = type === 'me' ? 'My-Report' : 'Manager-Guide';
   const namePart = uName ? '-' + uName.replace(/[^a-zA-Z0-9]/g, '') : '';
   doc.save('Loss-Leadership-DNA-' + label + '-' + code + namePart + '.pdf');
-
-  btn.disabled = false;
-  btn.textContent = orig;
-  note.textContent = 'Downloaded.';
-  note.className = 'pdf-note success';
 }
 
 function resetAll() {
