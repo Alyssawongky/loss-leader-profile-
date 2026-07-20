@@ -1439,9 +1439,10 @@ function buildPDF(type) {
   const HDR_H   = 102;               // header bar height
   const PREP_H  = 20;                // prepared-for strip height
   const BODY_Y  = HDR_H + PREP_H + 8; // body starts here
-  const FOOT_H  = 80;                // footer tile area height (bar 14 + tiles 56 + credit 10)
-  const CREDIT_Y = PH - 10;          // signature pinned to bottom
-  const BODY_H  = PH - BODY_Y - FOOT_H - 8; // usable body height
+  const TILE_H  = 58;                // dev tile height
+  const FOOT_H  = 16 + 6 + TILE_H + 24; // green bar + gap + tiles + signature zone = 104
+  const CREDIT_Y = PH - 8;           // signature text baseline, pinned to bottom
+  const BODY_H  = PH - BODY_Y - FOOT_H - 10; // usable body height
 
   // ── DRAW ICON ──
   function drawIcon(itype, cx, cy, col) {
@@ -1558,7 +1559,7 @@ function buildPDF(type) {
   // ── DEV TILE ──
   function devTile(x, y, w, label, iconKey) {
     doc.setFillColor(...LG);
-    doc.roundedRect(x, y, w, 56, 4, 4, 'F');
+    doc.roundedRect(x, y, w, TILE_H, 4, 4, 'F');
     doc.setFillColor(...GD);
     doc.circle(x + w/2, y + 17, 10, 'F');
     drawIcon(iconKey || 'star', x + w/2, y + 17, [255,255,255]);
@@ -1622,26 +1623,35 @@ function buildPDF(type) {
 
   // ── PAGE FOOTER ──
   function drawFooter(devExps, icons) {
-    const footY = PH - FOOT_H - 2;
+    // Footer zone sits at the bottom: green bar → tiles → clear gap → signature
+    const footY = PH - FOOT_H;        // top of footer zone
+    const barY  = footY;              // green label bar
+    const tilesY = barY + 16 + 6;     // tiles start after bar + small gap
+    const sigY  = tilesY + TILE_H + 10; // signature starts after tiles + 10pt gap
+
+    // Green header bar
     doc.setFillColor(...GD);
-    doc.rect(0, footY, PW, 16, 'F');
+    doc.rect(0, barY, PW, 16, 'F');
     doc.setFont(HF, 'bold');
     doc.setFontSize(7.5);
     doc.setTextColor(...SG);
-    doc.text('RECOMMENDED DEVELOPMENT EXPERIENCES', ML, footY + 11);
+    doc.text('RECOMMENDED DEVELOPMENT EXPERIENCES', ML, barY + 11);
 
+    // Dev tiles
     const n = devExps.length;
     const tileW = (CW - GAP * (n - 1)) / n;
     devExps.forEach((label, i) => {
-      devTile(ML + i * (tileW + GAP), footY + 18, tileW, label, icons[i % icons.length]);
+      devTile(ML + i * (tileW + GAP), tilesY, tileW, label, icons[i % icons.length]);
     });
 
-    // Signature — pinned to very bottom
+    // Signature — in its own clear zone below tiles, no overlap possible
     doc.setFont(HF, 'normal');
     doc.setFontSize(7);
     doc.setTextColor(...TG);
-    doc.text('With clarity and conviction, Sophie.  |  positivelypowered.net',
-             PW / 2, CREDIT_Y, { align: 'center' });
+    doc.text(
+      'With clarity and conviction, Sophie.  |  positivelypowered.net',
+      PW / 2, sigY, { align: 'center' }
+    );
   }
 
   // ── BODY: two-column layout filling BODY_H ──
