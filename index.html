@@ -1411,6 +1411,80 @@ function downloadPDF(type) {
   const COL = (CW - 14) / 2;         // column width ~254
   const COL2X = ML + COL + 14;       // right column x
 
+  // ── HELPER: draw section icon by type ──
+  function drawIcon(type, cx, cy, col) {
+    doc.setFillColor(...col);
+    doc.setDrawColor(...col);
+    doc.setLineWidth(1.2);
+    if (type === 'star') {
+      // Simple 4-point diamond star
+      const s = 5;
+      doc.triangle(cx, cy-s, cx-3, cy, cx, cy+s, 'F');
+      doc.triangle(cx, cy-s, cx+3, cy, cx, cy+s, 'F');
+    } else if (type === 'warn') {
+      // Exclamation mark: filled rect + dot
+      doc.roundedRect(cx-1.5, cy-5, 3, 5.5, 1, 1, 'F');
+      doc.circle(cx, cy+3, 1.5, 'F');
+    } else if (type === 'arrow') {
+      // Up arrow
+      doc.triangle(cx, cy-5, cx-4, cy, cx+4, cy, 'F');
+      doc.roundedRect(cx-1.5, cy, 3, 4, 0.5, 0.5, 'F');
+    } else if (type === 'chat') {
+      // Speech bubble: rounded rect + small triangle nib
+      doc.roundedRect(cx-5, cy-4.5, 10, 7, 1.5, 1.5, 'F');
+      doc.triangle(cx-2, cy+2.5, cx+1, cy+2.5, cx-1, cy+5.5, 'F');
+    } else if (type === 'target') {
+      // Target / concentric circles
+      doc.circle(cx, cy, 5.5, 'S');
+      doc.circle(cx, cy, 3, 'S');
+      doc.circle(cx, cy, 1, 'F');
+    } else if (type === 'person') {
+      // Simple person silhouette
+      doc.circle(cx, cy-4, 2.5, 'F');
+      doc.ellipse(cx, cy+1.5, 3.5, 2.5, 'F');
+    } else if (type === 'book') {
+      // Open book: two rects with spine line
+      doc.roundedRect(cx-5.5, cy-4, 5, 8, 0.5, 0.5, 'F');
+      doc.roundedRect(cx+0.5, cy-4, 5, 8, 0.5, 0.5, 'F');
+      doc.setLineWidth(0.8);
+      doc.line(cx, cy-4, cx, cy+4);
+    } else if (type === 'lightning') {
+      // Lightning bolt
+      doc.triangle(cx+1, cy-5, cx-3, cy+1, cx+1, cy+1, 'F');
+      doc.triangle(cx-1, cy-1, cx+3, cy+5, cx-1, cy+5, 'F');
+      doc.triangle(cx-1, cy-1, cx+1, cy-1, cx-1, cy+1, 'F');
+    } else if (type === 'cog') {
+      // Simple gear: circle + tick marks around edge
+      doc.circle(cx, cy, 4, 'F');
+      doc.setFillColor(255,255,255);
+      doc.circle(cx, cy, 2, 'F');
+      doc.setFillColor(...col);
+      for (let a = 0; a < 360; a += 45) {
+        const rad = (a * Math.PI) / 180;
+        const x1 = cx + Math.cos(rad) * 4;
+        const y1 = cy + Math.sin(rad) * 4;
+        const x2 = cx + Math.cos(rad) * 6;
+        const y2 = cy + Math.sin(rad) * 6;
+        doc.setLineWidth(2.5);
+        doc.setDrawColor(...col);
+        doc.line(x1, y1, x2, y2);
+      }
+    } else {
+      // Fallback: filled circle
+      doc.circle(cx, cy, 4, 'F');
+    }
+  }
+
+  // ── ICON MAP for section labels ──
+  function iconForKey(key) {
+    const map = {
+      'star': 'star', 'warn': 'warn', 'arrow': 'arrow',
+      'chat': 'chat', 'target': 'target', 'person': 'person',
+      'book': 'book', 'lightning': 'lightning', 'cog': 'cog'
+    };
+    return map[key] || 'star';
+  }
+
   // ── HELPER: draw rounded rect ──
   function rRect(x, y, w, h, r, fill) {
     doc.setFillColor(...fill);
@@ -1418,72 +1492,23 @@ function downloadPDF(type) {
   }
 
   // ── HELPER: bullet list inside a column box ──
-  function colSection(x, y, w, label, items, accentCol, fillCol, iconChar) {
+  function colSection(x, y, w, label, items, accentCol, fillCol, iconKey) {
     const PAD = 10;
     const lineH = 12.5;
-    // measure total height needed
-    let totalH = 28; // heading row
-    const wrapped = items.map(s => doc.splitTextToSize('• ' + s, w - PAD*2 - 8));
+    let totalH = 28;
+    const wrapped = items.map(s => doc.splitTextToSize(s, w - PAD*2 - 8));
     wrapped.forEach(lines => { totalH += lines.length * lineH + 4; });
     totalH += PAD;
 
-    // box background
-    rRect(x, y, w, totalH, 4, fillCol);
-    // left accent bar
-    doc.setFillColor(...accentCol);
-    doc.roundedRect(x, y, 4, totalH, 2, 2, 'F');
-
-    // icon circle
-    doc.setFillColor(...accentCol);
-    doc.circle(x + 16, y + 14, 8, 'F');
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9);
-    doc.setTextColor(255, 255, 255);
-    doc.text(iconChar, x + 16, y + 17.5, { align: 'center' });
-
-    // section heading
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8.5);
-    doc.setTextColor(...TD);
-    doc.text(label.toUpperCase(), x + 28, y + 17);
-
-    // bullet items
-    let iy = y + 32;
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.setTextColor(...TD);
-    wrapped.forEach(lines => {
-      // draw bullet dot
-      doc.setFillColor(...accentCol);
-      doc.circle(x + PAD + 3, iy - 2.5, 1.8, 'F');
-      // text without the '• ' prefix (we drew the dot manually)
-      const cleanLines = lines.map((l, li) => li === 0 ? l.replace(/^• /, '') : l);
-      doc.text(cleanLines, x + PAD + 8, iy);
-      iy += lines.length * lineH + 4;
-    });
-
-    return totalH;
-  }
-
-  // ── HELPER: full-width section ──
-  function fullSection(x, y, w, label, items, accentCol, fillCol, iconChar) {
-    const PAD = 10;
-    const lineH = 12;
-    let totalH = 28;
-    const wrapped = items.map(s => doc.splitTextToSize(s, w - PAD*2 - 8));
-    wrapped.forEach(lines => { totalH += lines.length * lineH + 3; });
-    totalH += PAD;
-
     rRect(x, y, w, totalH, 4, fillCol);
     doc.setFillColor(...accentCol);
     doc.roundedRect(x, y, 4, totalH, 2, 2, 'F');
 
+    // Icon circle background
     doc.setFillColor(...accentCol);
     doc.circle(x + 16, y + 14, 8, 'F');
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9);
-    doc.setTextColor(255, 255, 255);
-    doc.text(iconChar, x + 16, y + 17.5, { align: 'center' });
+    // Draw icon in white
+    drawIcon(iconKey, x + 16, y + 14, [255, 255, 255]);
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(8.5);
@@ -1498,26 +1523,24 @@ function downloadPDF(type) {
       doc.setFillColor(...accentCol);
       doc.circle(x + PAD + 3, iy - 2.5, 1.8, 'F');
       doc.text(lines, x + PAD + 8, iy);
-      iy += lines.length * lineH + 3;
+      iy += lines.length * lineH + 4;
     });
 
     return totalH;
   }
 
   // ── HELPER: dev experience tile ──
-  function devTile(x, y, w, label) {
-    rRect(x, y, w, 52, 4, LG);
+  function devTile(x, y, w, label, iconKey) {
+    rRect(x, y, w, 56, 4, LG);
+    // Icon circle
     doc.setFillColor(...GD);
     doc.circle(x + w/2, y + 16, 10, 'F');
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(10);
-    doc.setTextColor(255,255,255);
-    doc.text('✦', x + w/2, y + 19.5, { align: 'center' });
+    drawIcon(iconKey || 'star', x + w/2, y + 16, [255, 255, 255]);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(7);
     doc.setTextColor(...TD);
     const ll = doc.splitTextToSize(label, w - 6);
-    doc.text(ll, x + w/2, y + 36, { align: 'center' });
+    doc.text(ll, x + w/2, y + 34, { align: 'center' });
   }
 
   // ═══════════════════════════════════════════
@@ -1581,24 +1604,24 @@ function downloadPDF(type) {
     const GAP = 10;
 
     // Left col: STRENGTHS
-    const h1 = colSection(ML, ly, COL, 'Your Leadership Strengths', P.str, GD, LG, '★');
+    const h1 = colSection(ML, ly, COL, 'Your Leadership Strengths', P.str, GD, LG, 'star');
     ly += h1 + GAP;
 
     // Right col: BLIND SPOTS
-    const h2 = colSection(COL2X, ry, COL, 'Your Blind Spots', P.bs, AMB, AM, '!');
+    const h2 = colSection(COL2X, ry, COL, 'Your Blind Spots', P.bs, AMB, AM, 'warn');
     ry += h2 + GAP;
 
     // Left col: HOW YOU COMMUNICATE
-    const h3 = colSection(ML, ly, COL, 'How You Communicate', P.cm, GM, LG, '»');
+    const h3 = colSection(ML, ly, COL, 'How You Communicate', P.cm, GM, LG, 'chat');
     ly += h3 + GAP;
 
     // Right col: DEVELOPMENT OPPORTUNITIES
-    const h4 = colSection(COL2X, ry, COL, 'Your Development Opportunities', P.pt, PUB, PU, '↑');
+    const h4 = colSection(COL2X, ry, COL, 'Your Development Opportunities', P.pt, PUB, PU, 'arrow');
     ry += h4 + GAP;
 
     // Left col: HOW YOU LEARN
     const learnItems = [P.ln[0], P.ln[3], P.ln[4]];
-    const h5 = colSection(ML, ly, COL, 'How You Learn Best', learnItems, TEB, TE, '◎');
+    const h5 = colSection(ML, ly, COL, 'How You Learn Best', learnItems, TEB, TE, 'book');
     ly += h5 + GAP;
 
     // ── RECOMMENDED DEV EXPERIENCES FOOTER ──
@@ -1627,8 +1650,9 @@ function downloadPDF(type) {
       doc.text('RECOMMENDED DEVELOPMENT EXPERIENCES', ML, footerY + 10);
 
       const tileW = (CW - GAP * (devExps.length - 1)) / devExps.length;
+      const meIcons = ['lightning', 'person', 'chat', 'target', 'book'];
       devExps.forEach((label, i) => {
-        devTile(ML + i * (tileW + GAP), footerY + 16, tileW, label);
+        devTile(ML + i * (tileW + GAP), footerY + 16, tileW, label, meIcons[i % meIcons.length]);
       });
 
       // Footer credit
@@ -1692,24 +1716,24 @@ function downloadPDF(type) {
     const GAP = 10;
 
     // Left: HOW TO GET THE BEST
-    const h1 = colSection(ML, ly, COL, 'How to Get the Best from ' + (uName || 'Them'), P.ml, GD, LG, '★');
+    const h1 = colSection(ML, ly, COL, 'How to Get the Best from ' + (uName || 'Them'), P.ml, GD, LG, 'star');
     ly += h1 + GAP;
 
     // Right: WATCH FOR
-    const h2 = colSection(COL2X, ry, COL, 'Watch For', P.mw, AMB, AM, '!');
+    const h2 = colSection(COL2X, ry, COL, 'Watch For', P.mw, AMB, AM, 'warn');
     ry += h2 + GAP;
 
     // Left: COACHING OPPORTUNITIES
-    const h3 = colSection(ML, ly, COL, 'Coaching Opportunities', P.mpt, PUB, PU, '↑');
+    const h3 = colSection(ML, ly, COL, 'Coaching Opportunities', P.mpt, PUB, PU, 'arrow');
     ly += h3 + GAP;
 
     // Right: HOW TO COMMUNICATE
-    const h4 = colSection(COL2X, ry, COL, 'How to Communicate', P.mr, GM, LG, '»');
+    const h4 = colSection(COL2X, ry, COL, 'How to Communicate', P.mr, GM, LG, 'chat');
     ry += h4 + GAP;
 
     // Left: HOW TO DEVELOP THEM
     const devItems = [P.mln[0], P.mln[1], P.mln[2]];
-    const h5 = colSection(ML, ly, COL, 'How to Develop Them', devItems, TEB, TE, '◎');
+    const h5 = colSection(ML, ly, COL, 'How to Develop Them', devItems, TEB, TE, 'cog');
     ly += h5 + GAP;
 
     // ── DEV EXPERIENCES FOOTER ──
@@ -1731,8 +1755,9 @@ function downloadPDF(type) {
       doc.text('RECOMMENDED DEVELOPMENT EXPERIENCES', ML, footerY + 10);
 
       const tileW = (CW - GAP * (devExps.length - 1)) / devExps.length;
+      const mgrIcons = ['lightning', 'person', 'target', 'arrow', 'cog'];
       devExps.forEach((label, i) => {
-        devTile(ML + i * (tileW + GAP), footerY + 16, tileW, label);
+        devTile(ML + i * (tileW + GAP), footerY + 16, tileW, label, mgrIcons[i % mgrIcons.length]);
       });
 
       doc.setFont('helvetica', 'italic');
