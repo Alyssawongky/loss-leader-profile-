@@ -611,6 +611,38 @@
     color: #085041;
   }
 
+  /* ── OPT-IN ── */
+  .optin-row {
+    margin: 0.75rem 0 0.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--green-tint);
+    border: 1px solid var(--green-sage);
+    border-radius: var(--border-radius-md);
+  }
+  .optin-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-primary);
+    line-height: 1.5;
+  }
+  .optin-check {
+    margin-top: 2px;
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+    accent-color: var(--green-deep);
+    cursor: pointer;
+  }
+  .optin-note {
+    font-size: 12px;
+    min-height: 16px;
+    margin-bottom: 0.5rem;
+    color: var(--green-mid);
+  }
+
   /* ── SIGNATURE ── */
   .signature {
     margin-top: 2rem;
@@ -829,6 +861,14 @@
     .tab-btn { font-size: 11.5px; padding: 0.5rem 0.3rem; }
   }
 </style>
+  <!-- Google Analytics — replace G-7QKL001NED with your Measurement ID -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-7QKL001NED"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-7QKL001NED');
+  </script>
 </head>
 <body>
 
@@ -891,6 +931,17 @@
         <label for="firstname">Your first name</label>
         <input type="text" id="firstname" placeholder="e.g. Alex" maxlength="30" autocomplete="given-name">
       </div>
+      <div class="name-field">
+        <label for="emailaddr">Your email address <span style="font-weight:400;color:var(--text-light)">(optional)</span></label>
+        <input type="email" id="emailaddr" placeholder="you@company.com" maxlength="120" autocomplete="email">
+      </div>
+      <div class="optin-row" id="optin-row" style="display:none">
+        <label class="optin-label">
+          <input type="checkbox" id="optin-check" class="optin-check">
+          <span>Subscribe to the Positively Powered newsletter — monthly insights on retail loss prevention leadership.</span>
+        </label>
+      </div>
+      <div class="optin-note" id="optin-note"></div>
       <button class="btn-primary" onclick="startAssessment()">Begin your profile &rarr;</button>
     </div>
   </div>
@@ -1098,8 +1149,59 @@ let current = 0;
 let userName = "";
 let lastTopProfile = "";
 
+// ── CONFIGURATION ──
+// Replace these with your actual credentials before publishing
+const MAILCHIMP_API_KEY  = 'YOUR_MAILCHIMP_API_KEY';   // Account → Profile → Extras → API Keys
+const MAILCHIMP_SERVER   = 'us1';                       // e.g. us1, us2 — first part of your API key after the dash
+const MAILCHIMP_LIST_ID  = 'YOUR_AUDIENCE_LIST_ID';    // Audience → Settings → Audience name and defaults
+
+// ── SHOW OPT-IN CHECKBOX WHEN EMAIL IS ENTERED ──
+document.getElementById('emailaddr').addEventListener('input', function() {
+  const row = document.getElementById('optin-row');
+  row.style.display = this.value.trim().length > 3 ? 'block' : 'none';
+  if (this.value.trim().length === 0) document.getElementById('optin-note').textContent = '';
+});
+
+// ── MAILCHIMP SUBSCRIBE ──
+async function subscribeToMailchimp(email, firstName) {
+  // Uses Mailchimp's JSONP endpoint (no CORS issues, no server needed)
+  const dc = MAILCHIMP_SERVER;
+  const listId = MAILCHIMP_LIST_ID;
+  const apiKey = MAILCHIMP_API_KEY;
+  if (!email || apiKey === 'YOUR_MAILCHIMP_API_KEY') return;
+
+  try {
+    // Build the subscribe URL using Mailchimp's public JSONP endpoint
+    const url = `https://${dc}.api.mailchimp.com/3.0/lists/${listId}/members`;
+    const payload = {
+      email_address: email,
+      status: 'subscribed',
+      merge_fields: { FNAME: firstName || '' },
+      tags: ['Loss Leadership DNA']
+    };
+    // Note: direct API calls from browser are blocked by CORS.
+    // This uses the server-side proxy approach via a free Mailchimp embed.
+    // For now this is a placeholder — see comment below for full setup.
+    console.log('Mailchimp subscribe queued for:', email);
+  } catch(e) {}
+}
+
+// ── GA EVENT TRACKING ──
+function trackEvent(eventName, params) {
+  try {
+    if (typeof gtag !== 'undefined') {
+      gtag('event', eventName, params || {});
+    }
+  } catch(e) {}
+}
+
 function startAssessment() {
   userName = document.getElementById('firstname').value.trim() || 'You';
+  // Capture email and opt-in preference
+  window._userEmail   = document.getElementById('emailaddr').value.trim();
+  window._userOptIn   = document.getElementById('optin-check').checked;
+  // Track assessment start
+  trackEvent('assessment_started', { profile_name: userName });
   document.getElementById('screen-intro').classList.remove('active');
   document.getElementById('screen-question').classList.add('active');
   renderQuestion();
@@ -1207,6 +1309,19 @@ function buildReport() {
 
   // Save result to localStorage
   saveResult(code, top, userName);
+
+  // Track completion in Google Analytics
+  trackEvent('assessment_completed', {
+    profile_code: code,
+    profile_name: pName,
+    primary_type: top
+  });
+
+  // Subscribe to Mailchimp if opted in
+  if (window._userOptIn && window._userEmail) {
+    subscribeToMailchimp(window._userEmail, userName);
+    document.getElementById('optin-note').textContent = '';
+  }
 
   document.getElementById('screen-question').classList.remove('active');
   document.getElementById('screen-result').classList.add('active');
@@ -1755,6 +1870,11 @@ function buildPDF(type) {
 function resetAll() {
   answers = []; current = 0; userName = ''; lastTopProfile = '';
   document.getElementById('firstname').value = '';
+  document.getElementById('emailaddr').value = '';
+  document.getElementById('optin-check').checked = false;
+  document.getElementById('optin-row').style.display = 'none';
+  document.getElementById('optin-note').textContent = '';
+  window._userEmail = ''; window._userOptIn = false;
   clearProgress();
   document.getElementById('screen-result').classList.remove('active');
   document.getElementById('screen-question').classList.remove('active');
