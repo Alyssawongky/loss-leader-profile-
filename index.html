@@ -648,16 +648,34 @@
     background: var(--green-tint);
     border: 1px solid var(--green-sage);
     border-radius: var(--border-radius-md);
-    padding: 0.75rem 1rem;
+    padding: 1rem 1.1rem;
     margin-top: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .newsletter-confirm-text {
     font-size: 13px;
     color: var(--green-deep);
     line-height: 1.6;
+    flex: 1;
+    min-width: 200px;
   }
-  .newsletter-confirm span {
-    font-weight: 600;
-    margin-right: 4px;
+  .newsletter-btn {
+    display: inline-block;
+    background: var(--green-deep);
+    color: var(--off-white);
+    text-decoration: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: background 0.2s;
   }
+  .newsletter-btn:hover { background: var(--green-mid); }
 
   /* ── SIGNATURE ── */
   .signature {
@@ -1003,7 +1021,8 @@
     <div id="tab-learn" class="tab-panel"></div>
     <div id="tab-mgr" class="tab-panel"></div>
     <div id="newsletter-confirm" class="newsletter-confirm" style="display:none">
-      <span>&#10003;</span> You're subscribed to the Positively Powered newsletter — monthly insights on retail loss prevention leadership are on their way.
+      <div class="newsletter-confirm-text">You asked to join the Positively Powered newsletter — monthly insights on retail loss prevention leadership. Click below to confirm your subscription.</div>
+      <a id="newsletter-link" href="#" target="_blank" rel="noopener" class="newsletter-btn">Confirm my subscription &rarr;</a>
     </div>
     <div class="signature">
       With clarity and conviction, Sophie.<br>
@@ -1171,41 +1190,16 @@ let lastTopProfile = "";
 // ── CONFIGURATION ──
 // Replace these with your actual credentials before publishing
 // ── MAILCHIMP SUBSCRIBE ──
-// Uses Mailchimp's free JSONP endpoint — no API key or middleware needed
-const MAILCHIMP_URL = 'https://positivelypowered.us22.list-manage.com/subscribe/post-json?u=1f8df18e6869836aff3f25eec&id=7f3b90603e';
+// Mailchimp hosted signup form — opens in a new tab, pre-filled with the user's email.
+// reCAPTCHA stays enabled; the user completes it on Mailchimp's own page.
+const MAILCHIMP_HOSTED_URL = 'https://positivelypowered.us22.list-manage.com/subscribe?u=1f8df18e6869836aff3f25eec&id=7f3b90603e';
 
-function subscribeToMailchimp(email, firstName) {
-  if (!email) return;
-  try {
-    const callbackName = 'mcCallback_' + Date.now();
-
-    // Build query params — note: no 'tags' param, JSONP endpoint rejects it
-    const params = new URLSearchParams();
-    params.set('EMAIL', email);
-    if (firstName) params.set('FNAME', firstName);
-    params.set('b_1f8df18e6869836aff3f25eec_7f3b90603e', ''); // honeypot — must stay empty
-    params.set('c', callbackName);
-
-    // JSONP callback — logs Mailchimp's response so we can see success/failure
-    window[callbackName] = function(data) {
-      if (data && data.result === 'success') {
-        console.log('Mailchimp: subscribed successfully');
-      } else {
-        console.log('Mailchimp response:', data && data.msg ? data.msg : data);
-      }
-      delete window[callbackName];
-      const s = document.getElementById(callbackName);
-      if (s) s.remove();
-    };
-
-    const script = document.createElement('script');
-    script.id = callbackName;
-    script.src = MAILCHIMP_URL + '&' + params.toString();
-    script.onerror = function() { console.log('Mailchimp: request failed to load'); };
-    document.body.appendChild(script);
-  } catch(e) {
-    console.log('Mailchimp error:', e);
-  }
+function buildMailchimpLink(email, firstName) {
+  const params = new URLSearchParams();
+  if (email) params.set('MERGE0', email);      // MERGE0 = email on Mailchimp hosted forms
+  if (firstName) params.set('MERGE1', firstName); // MERGE1 = first name
+  const sep = MAILCHIMP_HOSTED_URL.includes('?') ? '&' : '?';
+  return MAILCHIMP_HOSTED_URL + sep + params.toString();
 }
 
 
@@ -1347,9 +1341,11 @@ function buildReport() {
     primary_type: top
   });
 
-  // Subscribe to Mailchimp if opted in
+  // Newsletter opt-in — show a subscribe button that opens the Mailchimp hosted form
   if (window._userOptIn && window._userEmail) {
-    subscribeToMailchimp(window._userEmail, userName);
+    const link = buildMailchimpLink(window._userEmail, userName);
+    const btn = document.getElementById('newsletter-link');
+    if (btn) btn.href = link;
     document.getElementById('newsletter-confirm').style.display = 'block';
   }
 
