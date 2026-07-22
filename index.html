@@ -1003,7 +1003,7 @@
     <div id="tab-learn" class="tab-panel"></div>
     <div id="tab-mgr" class="tab-panel"></div>
     <div id="newsletter-confirm" class="newsletter-confirm" style="display:none">
-      <span>&#10003;</span> Thanks for subscribing — check your inbox for a confirmation email and click the link to activate your subscription to the Positively Powered newsletter.
+      <span>&#10003;</span> You're subscribed to the Positively Powered newsletter — monthly insights on retail loss prevention leadership are on their way.
     </div>
     <div class="signature">
       With clarity and conviction, Sophie.<br>
@@ -1172,7 +1172,7 @@ let lastTopProfile = "";
 // Replace these with your actual credentials before publishing
 // ── MAILCHIMP SUBSCRIBE ──
 // Uses Mailchimp's free JSONP endpoint — no API key or middleware needed
-const MAILCHIMP_URL = 'https://us22.list-manage.com/subscribe/post-json?u=&id=7f3b90603e&f_id=';
+const MAILCHIMP_URL = 'https://positivelypowered.us22.list-manage.com/subscribe/post-json?u=1f8df18e6869836aff3f25eec&id=7f3b90603e';
 
 function subscribeToMailchimp(email, firstName) {
   if (!email) return;
@@ -1182,7 +1182,7 @@ function subscribeToMailchimp(email, firstName) {
       EMAIL: email,
       FNAME: firstName || '',
       tags:  'Loss Leadership DNA',
-      b_7f3b90603e: '' // honeypot field — must be empty
+      'b_1f8df18e6869836aff3f25eec_7f3b90603e': '' // honeypot field — must be empty
     });
     // Mailchimp JSONP — creates a script tag to bypass CORS
     const callbackName = 'mcCallback_' + Date.now();
