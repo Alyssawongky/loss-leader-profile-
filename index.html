@@ -1341,8 +1341,11 @@ const PROGRESS_KEY = 'lld_progress';
 
 function saveProgress() {
   try {
+    // Convert sparse array to a plain object keyed by index to survive JSON round-trip
+    const answersObj = {};
+    answers.forEach((a, i) => { if (a) answersObj[i] = a; });
     localStorage.setItem(PROGRESS_KEY, JSON.stringify({
-      answers,
+      answersObj,
       current,
       userName,
       savedAt: new Date().toISOString()
@@ -1358,7 +1361,14 @@ function resumeProgress() {
   try {
     const p = JSON.parse(localStorage.getItem(PROGRESS_KEY));
     if (!p) return;
-    answers = p.answers || [];
+    // Restore answers from object back into array
+    answers = [];
+    if (p.answersObj) {
+      Object.entries(p.answersObj).forEach(([i, a]) => { answers[parseInt(i)] = a; });
+    } else if (p.answers) {
+      // Legacy format — filter nulls
+      p.answers.forEach((a, i) => { if (a) answers[i] = a; });
+    }
     current = p.current || 0;
     userName = p.userName || 'You';
     document.getElementById('firstname').value = userName !== 'You' ? userName : '';
@@ -1442,8 +1452,10 @@ function checkForSaved() {
   try {
     // Check for in-progress session first — takes priority
     const progress = JSON.parse(localStorage.getItem(PROGRESS_KEY));
-    if (progress && progress.answers && progress.answers.length > 0) {
-      const answeredCount = progress.answers.filter(Boolean).length;
+    if (progress && (progress.answersObj || progress.answers)) {
+      const answeredCount = progress.answersObj
+        ? Object.keys(progress.answersObj).length
+        : (progress.answers || []).filter(Boolean).length;
       const name = progress.userName && progress.userName !== 'You' ? progress.userName : null;
       const banner = document.getElementById('saved-banner');
       const text = document.getElementById('saved-banner-text');
