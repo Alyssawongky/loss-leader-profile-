@@ -1177,26 +1177,35 @@ const MAILCHIMP_URL = 'https://positivelypowered.us22.list-manage.com/subscribe/
 function subscribeToMailchimp(email, firstName) {
   if (!email) return;
   try {
-    // Build the subscribe URL with email and name fields
-    const params = new URLSearchParams({
-      EMAIL: email,
-      FNAME: firstName || '',
-      tags:  'Loss Leadership DNA',
-      'b_1f8df18e6869836aff3f25eec_7f3b90603e': '' // honeypot field — must be empty
-    });
-    // Mailchimp JSONP — creates a script tag to bypass CORS
     const callbackName = 'mcCallback_' + Date.now();
+
+    // Build query params — note: no 'tags' param, JSONP endpoint rejects it
+    const params = new URLSearchParams();
+    params.set('EMAIL', email);
+    if (firstName) params.set('FNAME', firstName);
+    params.set('b_1f8df18e6869836aff3f25eec_7f3b90603e', ''); // honeypot — must stay empty
+    params.set('c', callbackName);
+
+    // JSONP callback — logs Mailchimp's response so we can see success/failure
     window[callbackName] = function(data) {
-      // Clean up
+      if (data && data.result === 'success') {
+        console.log('Mailchimp: subscribed successfully');
+      } else {
+        console.log('Mailchimp response:', data && data.msg ? data.msg : data);
+      }
       delete window[callbackName];
-      const script = document.getElementById(callbackName);
-      if (script) script.remove();
+      const s = document.getElementById(callbackName);
+      if (s) s.remove();
     };
+
     const script = document.createElement('script');
     script.id = callbackName;
-    script.src = MAILCHIMP_URL + '&' + params.toString() + '&c=' + callbackName;
+    script.src = MAILCHIMP_URL + '&' + params.toString();
+    script.onerror = function() { console.log('Mailchimp: request failed to load'); };
     document.body.appendChild(script);
-  } catch(e) {}
+  } catch(e) {
+    console.log('Mailchimp error:', e);
+  }
 }
 
 
