@@ -643,6 +643,22 @@
     color: var(--green-mid);
   }
 
+  /* ── NEWSLETTER CONFIRMATION ── */
+  .newsletter-confirm {
+    background: var(--green-tint);
+    border: 1px solid var(--green-sage);
+    border-radius: var(--border-radius-md);
+    padding: 0.75rem 1rem;
+    margin-top: 1.5rem;
+    font-size: 13px;
+    color: var(--green-deep);
+    line-height: 1.6;
+  }
+  .newsletter-confirm span {
+    font-weight: 600;
+    margin-right: 4px;
+  }
+
   /* ── SIGNATURE ── */
   .signature {
     margin-top: 2rem;
@@ -986,6 +1002,9 @@
     <div id="tab-me" class="tab-panel active"></div>
     <div id="tab-learn" class="tab-panel"></div>
     <div id="tab-mgr" class="tab-panel"></div>
+    <div id="newsletter-confirm" class="newsletter-confirm" style="display:none">
+      <span>&#10003;</span> Thanks for subscribing — check your inbox for a confirmation email and click the link to activate your subscription to the Positively Powered newsletter.
+    </div>
     <div class="signature">
       With clarity and conviction, Sophie.<br>
       Positively Powered &nbsp;·&nbsp; <a href="https://www.positivelypowered.net" style="color:inherit">positivelypowered.net</a>
@@ -1151,40 +1170,42 @@ let lastTopProfile = "";
 
 // ── CONFIGURATION ──
 // Replace these with your actual credentials before publishing
-const MAILCHIMP_API_KEY  = 'YOUR_MAILCHIMP_API_KEY';   // Account → Profile → Extras → API Keys
-const MAILCHIMP_SERVER   = 'us1';                       // e.g. us1, us2 — first part of your API key after the dash
-const MAILCHIMP_LIST_ID  = 'YOUR_AUDIENCE_LIST_ID';    // Audience → Settings → Audience name and defaults
+// ── MAILCHIMP SUBSCRIBE ──
+// Uses Mailchimp's free JSONP endpoint — no API key or middleware needed
+const MAILCHIMP_URL = 'https://us22.list-manage.com/subscribe/post-json?u=&id=7f3b90603e&f_id=';
 
-// ── SHOW OPT-IN CHECKBOX WHEN EMAIL IS ENTERED ──
+function subscribeToMailchimp(email, firstName) {
+  if (!email) return;
+  try {
+    // Build the subscribe URL with email and name fields
+    const params = new URLSearchParams({
+      EMAIL: email,
+      FNAME: firstName || '',
+      tags:  'Loss Leadership DNA',
+      b_7f3b90603e: '' // honeypot field — must be empty
+    });
+    // Mailchimp JSONP — creates a script tag to bypass CORS
+    const callbackName = 'mcCallback_' + Date.now();
+    window[callbackName] = function(data) {
+      // Clean up
+      delete window[callbackName];
+      const script = document.getElementById(callbackName);
+      if (script) script.remove();
+    };
+    const script = document.createElement('script');
+    script.id = callbackName;
+    script.src = MAILCHIMP_URL + '&' + params.toString() + '&c=' + callbackName;
+    document.body.appendChild(script);
+  } catch(e) {}
+}
+
+
 document.getElementById('emailaddr').addEventListener('input', function() {
   const row = document.getElementById('optin-row');
   row.style.display = this.value.trim().length > 3 ? 'block' : 'none';
   if (this.value.trim().length === 0) document.getElementById('optin-note').textContent = '';
 });
 
-// ── MAILCHIMP SUBSCRIBE ──
-async function subscribeToMailchimp(email, firstName) {
-  // Uses Mailchimp's JSONP endpoint (no CORS issues, no server needed)
-  const dc = MAILCHIMP_SERVER;
-  const listId = MAILCHIMP_LIST_ID;
-  const apiKey = MAILCHIMP_API_KEY;
-  if (!email || apiKey === 'YOUR_MAILCHIMP_API_KEY') return;
-
-  try {
-    // Build the subscribe URL using Mailchimp's public JSONP endpoint
-    const url = `https://${dc}.api.mailchimp.com/3.0/lists/${listId}/members`;
-    const payload = {
-      email_address: email,
-      status: 'subscribed',
-      merge_fields: { FNAME: firstName || '' },
-      tags: ['Loss Leadership DNA']
-    };
-    // Note: direct API calls from browser are blocked by CORS.
-    // This uses the server-side proxy approach via a free Mailchimp embed.
-    // For now this is a placeholder — see comment below for full setup.
-    console.log('Mailchimp subscribe queued for:', email);
-  } catch(e) {}
-}
 
 // ── GA EVENT TRACKING ──
 function trackEvent(eventName, params) {
@@ -1320,7 +1341,7 @@ function buildReport() {
   // Subscribe to Mailchimp if opted in
   if (window._userOptIn && window._userEmail) {
     subscribeToMailchimp(window._userEmail, userName);
-    document.getElementById('optin-note').textContent = '';
+    document.getElementById('newsletter-confirm').style.display = 'block';
   }
 
   document.getElementById('screen-question').classList.remove('active');
@@ -1886,6 +1907,7 @@ function resetAll() {
   document.getElementById('optin-check').checked = false;
   document.getElementById('optin-row').style.display = 'none';
   document.getElementById('optin-note').textContent = '';
+  document.getElementById('newsletter-confirm').style.display = 'none';
   window._userEmail = ''; window._userOptIn = false;
   clearProgress();
   document.getElementById('screen-result').classList.remove('active');
