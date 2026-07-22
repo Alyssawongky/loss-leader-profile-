@@ -1198,6 +1198,7 @@ function buildMailchimpLink(email, firstName) {
   const params = new URLSearchParams();
   if (email) params.set('MERGE0', email);      // MERGE0 = email on Mailchimp hosted forms
   if (firstName) params.set('MERGE1', firstName); // MERGE1 = first name
+  params.set('tags', 'Loss Leadership DNA');   // tag by name — travels only via this link
   const sep = MAILCHIMP_HOSTED_URL.includes('?') ? '&' : '?';
   return MAILCHIMP_HOSTED_URL + sep + params.toString();
 }
